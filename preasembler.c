@@ -6,10 +6,11 @@
  */
 #include "mmn14.h"
 typedef char* MACRO;
-int ind = 0;
-int lastLine=0;
+int ind;
+int lastLine;
 MACRO m[10];
 FILE* inputFile;
+
 
 void ignorewhitechar(char* line) {
 
@@ -79,11 +80,17 @@ char* preasembler(FILE* f) {
 	int isMacro;
 
 	inmacro[0]=NULL;
+
+	/*init global variables*/
+	ind = 0;
+	lastLine=0;
+	inputFile = f;
 	m[0]=NULL;
+
 	file = (char*) malloc(10000);
 	curline = readline();
 	macronum = 0;
-	inputFile = f;
+
 
 	do {
 		ignorewhitechar(curline);
@@ -118,14 +125,18 @@ char* preasembler(FILE* f) {
 			}
 			macronum++;
 		}
-
+		/*free (curline);*/
 		curline = readline();
 		ind=0;
 	}
 	while (lastLine!=1);
 
-	/*printf("\nAfter last line:\n%s\n", file);
-	printf("------------------------------------------\n");*/
+	/*Release all memory*/
+	/*free (curline);*/
+	for (i = 0; i < macronum; i++) {
+		free(m[i]);
+		free (inmacro[i]);
+	}
 
 	return file;
 }

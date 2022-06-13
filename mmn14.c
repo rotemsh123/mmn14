@@ -31,8 +31,9 @@ void handlefile(char* filename){
 	fprintf(aftermacrofile, "%s", text);
 
 	fclose(aftermacrofile);
+
 	free (inputfilename);
-	free (text);
+	/*free (text);*/
 	free (fileaftermacro);
 }
 
