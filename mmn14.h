@@ -13,10 +13,13 @@
 #include <stdbool.h>
 typedef int REGISTER[10];
 typedef int WORD[10];
-char* trans32(unsigned long x);
-int ordertrans(char* order);
+WORD memory[256];
 char* readline();
-char* preasembler();
+char* preasembler(FILE* f);
+void ignorewhitechar(char* line,int ind);
+int lastLine;
+FILE* inputFile;
+
 
 
 #endif /* MMN14_H_ */

@@ -7,25 +7,16 @@
 #include "mmn14.h"
 typedef char* MACRO;
 int ind;
-int lastLine;
 MACRO m[10];
-FILE* inputFile;
 
-
-void ignorewhitechar(char* line) {
-
-	while(strncmp(&(line[ind]), " ",1) == 0 || strncmp(&(line[ind]), "\t",1) == 0) {
-		ind++;
-	}
-}
 
 void macroname(char* line,int i) {
 	int charIndex = 0;
 	m[i]=(char*)malloc(80);
 	ind=0;
-	ignorewhitechar(line);
+	ignorewhitechar(line,ind);
 	ind += 5;
-	ignorewhitechar(line);
+	ignorewhitechar(line,ind);
 	while (strcmp(&(line[ind]), " ") != 0 && strcmp(&(line[ind]), "\t") != 0
 			&& line[ind] != EOF && strcmp(&(line[ind]), "\n") != 0) {
 		strncpy(&(m[i][charIndex]), &(line[ind]), 1);
@@ -34,28 +25,6 @@ void macroname(char* line,int i) {
 	}
 }
 
-char* readline() {
-	char* line;
-	int i=0;
-	line=(char*)malloc(80);
-
-	while (1){
-		if (fscanf(inputFile, "%c",&(line[i]))==1){
-			if (strncmp(&(line[i]),"\n", 1)==0){
-				/*printf("\n Line: %s \n ", line);*/
-				return line;
-			}
-			i++;
-		}
-		else{
-			/*printf ("LAST LINE");*/
-			lastLine = 1;
-			/*printf("\n Line: %s \n ", line);*/
-			return line;
-		}
-	}
-
-}
 
 int ismacroline(char* line) {
 	if (strncmp(&line[ind], "macro", 5) == 0) {
@@ -93,7 +62,7 @@ char* preasembler(FILE* f) {
 
 
 	do {
-		ignorewhitechar(curline);
+		ignorewhitechar(curline,ind);
 		isMacro = ismacroline(curline);
 
 		/* not a macro name line*/
@@ -117,22 +86,22 @@ char* preasembler(FILE* f) {
 				break;
 			}
 			ind=0;
-			ignorewhitechar(curline);
+			ignorewhitechar(curline,ind);
 			while (strncmp(&(curline[ind]), "endmacro", 8) != 0) {
 				copyText(curline, inmacro[macronum]);
 				curline = readline();
-				ignorewhitechar(curline);
+				ignorewhitechar(curline,ind);
 			}
 			macronum++;
 		}
-		/*free (curline);*/
 		curline = readline();
+
 		ind=0;
 	}
 	while (lastLine!=1);
 
 	/*Release all memory*/
-	/*free (curline);*/
+	free (curline);
 	for (i = 0; i < macronum; i++) {
 		free(m[i]);
 		free (inmacro[i]);

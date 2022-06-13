@@ -20,6 +20,9 @@ void handlefile(char* filename){
 	  exit(-1);
 	}
 	text = preasembler(inputFile);
+
+
+
 	puts(text);
 
 	fclose(inputFile);
