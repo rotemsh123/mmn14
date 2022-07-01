@@ -14,6 +14,6 @@ int linetype(char* line)
 int orderornot(char* line){
 	int ind=0;
 	ignorewhitechar(line,ind);
-
+	return ind;
 
 }

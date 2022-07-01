@@ -22,7 +22,6 @@ void handlefile(char* filename){
 	text = preasembler(inputFile);
 
 
-
 	puts(text);
 
 	fclose(inputFile);

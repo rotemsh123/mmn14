@@ -13,10 +13,9 @@ MACRO m[10];
 void macroname(char* line,int i) {
 	int charIndex = 0;
 	m[i]=(char*)malloc(80);
-	ind=0;
-	ignorewhitechar(line,ind);
+	ind=ignorewhitechar(line,0);
 	ind += 5;
-	ignorewhitechar(line,ind);
+	ind = ignorewhitechar(line,ind);
 	while (strcmp(&(line[ind]), " ") != 0 && strcmp(&(line[ind]), "\t") != 0
 			&& line[ind] != EOF && strcmp(&(line[ind]), "\n") != 0) {
 		strncpy(&(m[i][charIndex]), &(line[ind]), 1);
@@ -62,13 +61,13 @@ char* preasembler(FILE* f) {
 
 
 	do {
-		ignorewhitechar(curline,ind);
+		ind = ignorewhitechar(curline,ind);
 		isMacro = ismacroline(curline);
 
 		/* not a macro name line*/
 		if (isMacro == 1) {
 			for (i = 0; i < macronum; i++) {
-				if (strncmp(&(curline[ind]), m[i],strlen(m[i])-1) ==0) {
+				if (compareignore(&(curline[ind]), m[i]) ==0) {
 					copyText(inmacro[i], file);
 					macro = 1;
 				}
@@ -85,12 +84,11 @@ char* preasembler(FILE* f) {
 			if (curline[0] == EOF) {
 				break;
 			}
-			ind=0;
-			ignorewhitechar(curline,ind);
+			ind=ignorewhitechar(curline,0);
 			while (strncmp(&(curline[ind]), "endmacro", 8) != 0) {
 				copyText(curline, inmacro[macronum]);
 				curline = readline();
-				ignorewhitechar(curline,ind);
+				ind = ignorewhitechar(curline,ind);
 			}
 			macronum++;
 		}

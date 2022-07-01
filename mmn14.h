@@ -16,7 +16,8 @@ typedef int WORD[10];
 WORD memory[256];
 char* readline();
 char* preasembler(FILE* f);
-void ignorewhitechar(char* line,int ind);
+int ignorewhitechar(char* line,int ind);
+int compareignore(char* s1, char* s2);
 int lastLine;
 FILE* inputFile;
 
