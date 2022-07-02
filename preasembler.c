@@ -56,7 +56,7 @@ char* preasembler(FILE* f) {
 	m[0]=NULL;
 
 	file = (char*) malloc(10000);
-	curline = readline();
+	curline = readline(f);
 	macronum = 0;
 
 
@@ -80,7 +80,7 @@ char* preasembler(FILE* f) {
 		else {
 			macroname(curline,macronum);
 			inmacro[macronum] = (char*) malloc(200);
-			curline = readline();
+			curline = readline(f);
 			if (curline[0] == EOF) {
 				break;
 			}
@@ -92,7 +92,7 @@ char* preasembler(FILE* f) {
 			}
 			macronum++;
 		}
-		curline = readline();
+		curline = readline(f);
 
 		ind=0;
 	}

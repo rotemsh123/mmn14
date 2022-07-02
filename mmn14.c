@@ -20,8 +20,6 @@ void handlefile(char* filename){
 	  exit(-1);
 	}
 	text = preasembler(inputFile);
-
-
 	puts(text);
 
 	fclose(inputFile);
@@ -29,8 +27,10 @@ void handlefile(char* filename){
 	fileaftermacro=(char*)malloc(80);
 	strcpy(fileaftermacro,filename);
 	strcat(fileaftermacro, ".am");
-	aftermacrofile = fopen (fileaftermacro, "w");
+	aftermacrofile = fopen (fileaftermacro, "rw");
 	fprintf(aftermacrofile, "%s", text);
+
+	text = runassembler(aftermacrofile);
 
 	fclose(aftermacrofile);
 
