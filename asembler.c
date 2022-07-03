@@ -13,19 +13,7 @@ int isEmptyLineOrComment(char* line)
 }
 
 
-char* getcharstillchar(char* text, int start, char c){
-	char* line;
-	int i;
-	int end = indexof(&c, text, start);
-	int length= end-start;
-	line = (char*) malloc(length);
-	for (i=0;i<length; i++){
-		strncpy(&(line[i]), &(text[i+start]), 1);
-	}
-	strncpy(&(line[i]), "\0", 1);
 
-	return line;
-}
 
 /*
  * check if there is label in this line, if there is,
@@ -44,7 +32,6 @@ int handlelabel(char* line, int index){
 	// if there is ":" in the line, we take the lable and handle it
 	labelindex++;
 	label = getcharstillchar(line, index, ':');
-
 	lables[labelindex].name = (char*)malloc(30);
 	strcpy(lables[labelindex].name, label);
 	lables[labelindex].value = PC;
@@ -60,6 +47,7 @@ int isInstruction(char* curline, int index){
 	}
 	return 1;
 }
+
 char* runassembler(FILE* f){
 	char* text;
 	char* curline;
@@ -75,7 +63,7 @@ char* runassembler(FILE* f){
 			if(isInstruction(curline, index)==0){
 				handleInstructions(curline, index);
 			}
-			else{
+			else {
 				handleorder(curline, index);
 			}
 		}

@@ -32,6 +32,20 @@ char* readline(FILE* f) {
 
 }
 
+char* getcharstillchar(char* text, int start, char c){
+	char* line;
+	int i;
+	int end = indexof(&c, text, start);
+	int length= end-start;
+	line = (char*) malloc(length);
+	for (i=0;i<length; i++){
+		strncpy(&(line[i]), &(text[i+start]), 1);
+	}
+	strncpy(&(line[i]), "\0", 1);
+
+	return line;
+}
+
 int compareignore(char* s1, char* s2){
 
 	char s1c;

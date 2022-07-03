@@ -2,9 +2,7 @@
 int power(int a,int b);
 char base32[32] = {'!','@','#','$','%','^','&','*','<','>','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v'};
 char final[2];
-char opcode[16][3] = {{'m','o','v'},{'c','m','p'}, {'a','d','d'}
-, {'s','u','b'},{'n','o','t'}, {'c','l','r'}, {'l','e','a'}, {'i','n','c'}, {'d','e','c'}, {'j','m','p'},
-{'b','n','e'}, {'g','e','t'}, {'p','r','n'}, {'j','s','r'}, {'r','t','s'}, {'h','l','t' }};
+char* opcode[16] = {"mov","cmp", "add", "sub","not", "clr", "lea", "inc", "dec", "jmp", "bne", "get", "prn", "jsr", "rts", "hlt"};
 
 char* trans32(unsigned long number){
 	int num[10];
@@ -35,7 +33,8 @@ char* trans32(unsigned long number){
 int ordertrans(char* order){
 	int i = 0;
 	for (i=0; i< 16; i++){
-		if(strcmp(opcode[i],order)==0){
+		char * ordername = opcode[i];
+		if(strcmp(ordername,order)==0){
 			return i;
 		}
 	}

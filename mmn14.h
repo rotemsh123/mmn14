@@ -22,6 +22,8 @@ int compareignore(char* s1, char* s2);
 int indexof (char* c, char* s, int start);
 char* runassembler(FILE* f);
 
+int ordertrans(char* order);
+
 int lastLine;
 FILE* inputFile;
 
@@ -35,5 +37,6 @@ int labelindex;
 
 void handleorder(char* curline, int index);
 void handleInstructions(char* curline, int index);
+char* getcharstillchar(char* text, int start, char c);
 
 #endif /* MMN14_H_ */
