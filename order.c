@@ -7,7 +7,7 @@
 
 #include "mmn14.h"
 
-void handleorder(char* curline, int index){
+void handleorder(int linenumber, char* curline, int index){
 	char* order;
 	int ordercode;
 	printf("order line: %s", &(curline[index]));
@@ -37,6 +37,6 @@ void handleorder(char* curline, int index){
 		printf("order (with no param) is %s code is: %d\n", order, ordercode);
 		return;
 	}
-	printf("Illegal order: %s\n", order);
+	printf("Error in line %d: Illegal order: %s \n", linenumber, order);
 
 }

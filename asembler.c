@@ -20,21 +20,29 @@ int isEmptyLineOrComment(char* line)
  * takes the label and put it into the
  * label table with the current address
  */
-int handlelabel(char* line, int index){
+int handlelabel(int linenumber, char* line, int index){
 
 	int indexofdots;
 	char* label;
+	int i;
 	index = ignorewhitechar(line, index);
 	indexofdots = indexof(":", line, index);
 	if (indexofdots==-1){
 		return index;
 	}
-	// if there is ":" in the line, we take the lable and handle it
-	labelindex++;
+	/* if there is ":" in the line, we take the lable and handle it*/
 	label = getcharstillchar(line, index, ':');
+	/* check if this label already exists*/
+
+	for (i=0; i< labelindex; i++){
+		if (strcmp(lables[i].name, label) == 0){
+			printf ("ERROR in line %d. label: %s already exist\n", linenumber, label);
+		}
+	}
+
 	lables[labelindex].name = (char*)malloc(30);
 	strcpy(lables[labelindex].name, label);
-	lables[labelindex].value = PC;
+	labelindex++;
 
 	printf ("label: %s\n", label);
 	return indexofdots+1;
@@ -51,23 +59,28 @@ int isInstruction(char* curline, int index){
 char* runassembler(FILE* f){
 	char* text;
 	char* curline;
+	int linenumber = 0;
 	lastLine = 0;
 	labelindex = 0;
 	text = (char*)malloc (1000);
 	curline = readline(f);
+	linenumber++;
 	do{
 		if (isEmptyLineOrComment(curline)!=0){
 
 			int index = 0;
-			index = handlelabel(curline, index);
+			index = handlelabel(linenumber, curline, index);
 			if(isInstruction(curline, index)==0){
-				handleInstructions(curline, index);
+				lables[labelindex].value = DC;
+				handleInstructions(linenumber, curline, index);
 			}
 			else {
-				handleorder(curline, index);
+				lables[labelindex].value = IC;
+				handleorder(linenumber, curline, index);
 			}
 		}
 		curline = readline(f);
+		linenumber++;
 	}
 	while (lastLine!=1);
 

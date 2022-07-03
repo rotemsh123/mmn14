@@ -14,7 +14,8 @@
 typedef int REGISTER[10];
 typedef int WORD[10];
 WORD memory[256];
-int PC;
+int IC;
+int DC;
 char* readline();
 char* preasembler(FILE* f);
 int ignorewhitechar(char* line,int ind);
@@ -35,8 +36,8 @@ typedef struct label {
 LABEL lables[50];
 int labelindex;
 
-void handleorder(char* curline, int index);
-void handleInstructions(char* curline, int index);
+void handleorder(int linenumber, char* curline, int index);
+void handleInstructions(int linenumber, char* curline, int index);
 char* getcharstillchar(char* text, int start, char c);
 
 #endif /* MMN14_H_ */

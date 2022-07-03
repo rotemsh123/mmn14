@@ -7,51 +7,51 @@
 
 #include "mmn14.h"
 
-void handledata(char* curline, int index){
+void handledata(int linenumber, char* curline, int index){
 	index = index + 5;
 	printf("Data: %s", &(curline[index]));
 }
-void handlestring(char* curline, int index){
+void handlestring(int linenumber, char* curline, int index){
 	index = index + 7;
 	printf("String: %s", &(curline[index]));
 }
-void handlestruct(char* curline, int index){
+void handlestruct(int linenumber, char* curline, int index){
 	index = index + 7;
 	printf("Struct: %s", &(curline[index]));
 }
-void handleentry(char* curline, int index){
+void handleentry(int linenumber, char* curline, int index){
 	index = index + 6;
 	printf("Entry: %s", &(curline[index]));
 }
-void handleextern(char* curline, int index){
+void handleextern(int linenumber, char* curline, int index){
 	index = index + 7;
 	printf("Extern: %s", &(curline[index]));
 }
 
 
-void handleInstructions(char* curline, int index){
+void handleInstructions(int linenumber, char* curline, int index){
 	printf("instruction line: %s", &(curline[index]));
 	index = ignorewhitechar(curline, index);
-	if (strncmp(&(curline[index]), ".data", 5) ==0){
-		handledata(curline, index);
+	if (strncmp(&(curline[index]), ".data ", 6) ==0){
+		handledata(linenumber, curline, index);
 		return;
 	}
-	if (strncmp(&(curline[index]), ".string", 7) ==0){
-		handlestring(curline, index);
+	if (strncmp(&(curline[index]), ".string ", 8) ==0){
+		handlestring(linenumber, curline, index);
 		return;
 	}
-	if (strncmp(&(curline[index]), ".struct", 7) ==0){
-		handlestruct(curline, index);
+	if (strncmp(&(curline[index]), ".struct ", 8) ==0){
+		handlestruct(linenumber, curline, index);
 		return;
 	}
-	if (strncmp(&(curline[index]), ".entry", 6) ==0){
-		handleentry(curline, index);
+	if (strncmp(&(curline[index]), ".entry ", 7) ==0){
+		handleentry(linenumber, curline, index);
 		return;
 	}
-	if (strncmp(&(curline[index]), ".extern", 7) ==0){
-		handleextern(curline, index);
+	if (strncmp(&(curline[index]), ".extern ", 8) ==0){
+		handleextern(linenumber, curline, index);
 		return;
 	}
-	printf("Illegal instruction: %s", &(curline[index]));
+	printf("ERROR in line %d: Illegal instruction: %s", linenumber, &(curline[index]));
 
 }
