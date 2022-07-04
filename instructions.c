@@ -47,6 +47,9 @@ void handleInstructions(int linenumber, char* curline, int index){
 	else if (strncmp(&(curline[index]), ".extern ", 8) ==0){
 		handleextern(linenumber, curline, index);
 	}
+	else{
+		printf("ERROR in line %d: Illegal instruction: %s", linenumber, &(curline[index]));
+	}
 	WORD w;
 	int i;
 	for (i=0; i<=9; i++){
@@ -62,6 +65,5 @@ void handleInstructions(int linenumber, char* curline, int index){
 	}
 	DC++;
 
-	printf("ERROR in line %d: Illegal instruction: %s", linenumber, &(curline[index]));
 
 }
