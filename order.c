@@ -21,22 +21,50 @@ void handleorder(int linenumber, char* curline, int index){
 
 	ordercode = ordertrans(order);
 
-
-	// order with 2 params
-	if (ordercode <=3 || ordercode == 6){
-		printf("order (with 2 params) is %s code is: %d\n", order, ordercode);
-		return;
-	}
-	// order with 1 param
-	if (ordercode ==4 || ordercode == 5 || (ordercode >= 7 && ordercode <= 13) ){
-		printf("order (with 1 param) is %s code is: %d\n", order, ordercode);
-		return;
-	}
 	//order without params
 	if (ordercode >= 14){
 		printf("order (with no param) is %s code is: %d\n", order, ordercode);
 		return;
 	}
+
+	index = indexof(" ", curline, index);
+	index = ignorewhitechar(curline, index);
+
+	if (index == -1){
+		printf("Error in line %d: missing first operand for order: %s \n", linenumber, order);
+		return;
+	}
+
+
+	// order with 1 param
+	if (ordercode ==4 || ordercode == 5 || (ordercode >= 7 && ordercode <= 13) ){
+		printf("order (with 1 param) is %s code is: %d\n", order, ordercode);
+		if (indexof(",", curline, index) !=-1){
+			printf("Error in line %d: Too many operands for order: %s \n", linenumber, order);
+			return;
+		}
+		char* arg1 = getcharstillchar(curline, index, '\n');
+		printf("order %s with 1 param: arg1: %s\n", order, arg1);
+		return;
+	}
+
+	// order with 2 params
+	if (ordercode <=3 || ordercode == 6){
+		printf("order (with 2 params) is %s code is: %d\n", order, ordercode);
+		if (indexof(",", curline, index) ==-1){
+			printf("Error in line %d: missing operands for order: %s \n", linenumber, order);
+			return;
+		}
+		char* arg1 = getcharstillchar(curline, index, ',');
+		index = indexof(",", curline, index);
+		char* arg2 = getcharstillchar(curline, index+1, '\n');
+
+		printf("order %s with 2 params: arg1: %s,  arg2: %s\n", order, arg1, arg2);
+
+		return;
+	}
+
+
 	printf("Error in line %d: Illegal order: %s \n", linenumber, order);
 
 }

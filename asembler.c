@@ -35,13 +35,13 @@ int handlelabel(int linenumber, char* line, int index){
 	/* check if this label already exists*/
 
 	for (i=0; i< labelindex; i++){
-		if (strcmp(lables[i].name, label) == 0){
+		if (strcmp(symboltable[i].name, label) == 0){
 			printf ("ERROR in line %d. label: %s already exist\n", linenumber, label);
 		}
 	}
 
-	lables[labelindex].name = (char*)malloc(30);
-	strcpy(lables[labelindex].name, label);
+	symboltable[labelindex].name = (char*)malloc(30);
+	strcpy(symboltable[labelindex].name, label);
 	labelindex++;
 
 	printf ("label: %s\n", label);
@@ -71,11 +71,11 @@ char* runassembler(FILE* f){
 			int index = 0;
 			index = handlelabel(linenumber, curline, index);
 			if(isInstruction(curline, index)==0){
-				lables[labelindex].value = DC;
+				symboltable[labelindex].value = DC;
 				handleInstructions(linenumber, curline, index);
 			}
 			else {
-				lables[labelindex].value = IC;
+				symboltable[labelindex].value = IC;
 				handleorder(linenumber, curline, index);
 			}
 		}

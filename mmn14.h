@@ -31,9 +31,10 @@ FILE* inputFile;
 typedef struct label {
   char *name;
   int value;
+  int type; /*0 = relocatable 1= external*/
 } LABEL;
 
-LABEL lables[50];
+LABEL symboltable[50];
 int labelindex;
 
 void handleorder(int linenumber, char* curline, int index);
