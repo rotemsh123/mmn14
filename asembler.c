@@ -12,8 +12,18 @@ int isEmptyLineOrComment(char* line)
 	return 1;
 }
 
-
-
+/*
+ * After first execution, update the symbol table with the "real" adrresses
+ * each symbol which point to the data add the IC value
+ */
+void updatelabels(){
+	int i;
+	for (i=0; i< labelindex; i++){
+		if (symboltable[i].DI == 1){
+			symboltable[i].value += IC;
+		}
+	}
+}
 
 /*
  * check if there is label in this line, if there is,
@@ -40,9 +50,9 @@ int handlelabel(int linenumber, char* line, int index){
 		}
 	}
 
+	islabelline =1;
 	symboltable[labelindex].name = (char*)malloc(30);
 	strcpy(symboltable[labelindex].name, label);
-	labelindex++;
 
 	printf ("label: %s\n", label);
 	return indexofdots+1;
@@ -85,6 +95,9 @@ char* runassembler(FILE* f){
 		linenumber++;
 	}
 	while (lastLine!=1);
+
+	updatelabels();
+	printlabels();
 
 	return text;
 }

@@ -20,8 +20,11 @@ typedef struct{
 } WORD;
 
 WORD* memory[256];
+WORD* datamemory[256];
+
 int IC;
 int DC;
+int islabelline;
 char* readline();
 char* preasembler(FILE* f);
 int ignorewhitechar(char* line,int ind);
@@ -38,6 +41,7 @@ typedef struct {
   char *name;
   int value;
   int type; /*0 = relocatable 1= external*/
+  int DI; /* 0 is order, 1 is data*/
 } LABEL;
 
 LABEL symboltable[50];
@@ -49,5 +53,6 @@ char* getcharstillchar(char* text, int start, char c);
 int getaddresscode(char* arg);
 char* WORDtostring(WORD word);
 char* WORDtostringwithminus(WORD word);
+void printlabels();
 
 #endif /* MMN14_H_ */

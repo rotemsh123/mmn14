@@ -34,24 +34,34 @@ void handleInstructions(int linenumber, char* curline, int index){
 	index = ignorewhitechar(curline, index);
 	if (strncmp(&(curline[index]), ".data ", 6) ==0){
 		handledata(linenumber, curline, index);
-		return;
 	}
-	if (strncmp(&(curline[index]), ".string ", 8) ==0){
+	else if (strncmp(&(curline[index]), ".string ", 8) ==0){
 		handlestring(linenumber, curline, index);
-		return;
 	}
-	if (strncmp(&(curline[index]), ".struct ", 8) ==0){
+	else if (strncmp(&(curline[index]), ".struct ", 8) ==0){
 		handlestruct(linenumber, curline, index);
-		return;
 	}
-	if (strncmp(&(curline[index]), ".entry ", 7) ==0){
+	else if (strncmp(&(curline[index]), ".entry ", 7) ==0){
 		handleentry(linenumber, curline, index);
-		return;
 	}
-	if (strncmp(&(curline[index]), ".extern ", 8) ==0){
+	else if (strncmp(&(curline[index]), ".extern ", 8) ==0){
 		handleextern(linenumber, curline, index);
-		return;
 	}
+	WORD w;
+	int i;
+	for (i=0; i<=9; i++){
+		w.value[i] = 0;
+	}
+	datamemory[DC] = &w;
+
+	if (islabelline == 1){
+		symboltable[labelindex].value = DC;
+		symboltable[labelindex].DI = 1;
+		labelindex++;
+		islabelline=0;
+	}
+	DC++;
+
 	printf("ERROR in line %d: Illegal instruction: %s", linenumber, &(curline[index]));
 
 }

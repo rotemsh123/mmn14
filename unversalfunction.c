@@ -70,3 +70,10 @@ int indexof (char* c, char* line, int start){
 	}
 	return -1;
 }
+
+void printlabels(){
+	int i = 0;
+	for (i=0; i< labelindex; i++){
+		printf ("Label %s address %d\n" , symboltable[i].name, symboltable[i].value);
+	}
+}

@@ -5,8 +5,8 @@ macro m1
 inc K
 mov S1.2 ,r3
 endmacro
-prn #-5
-sub r1, r4
+jsr #-5
+sub #5, r4
 m1
 bne LOOP
 END: hlt

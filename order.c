@@ -62,12 +62,38 @@ void handle1param(int linenumber, char* curline, int ordercode, char* order, int
 	}
 	char* arg1 = getcharstillchar(curline, index, '\n');
 	int arg1addresscode = getaddresscode(arg1);
+	/*
+	 * only prn - (opcode 12) can has target address code =0
+	 */
+	if ((arg1addresscode==0) && (ordercode!=12) ){
+		printf("Error in line %d: oder %s doesn't support direct address code for the target \n", linenumber, order);
+	}
 
 	WORD opLine = getword(0, arg1addresscode, 0, ordercode);
 	printf("Word is %d-%d-%d-%d\n", ordercode, 0, arg1addresscode, 0);
 	printf("The word is: %s\n", WORDtostring(opLine));
 	printf("The word with minus is: %s\n", WORDtostringwithminus(opLine));
 	memory[IC] = &opLine;
+	if (islabelline == 1){
+		symboltable[labelindex].value = IC;
+		symboltable[labelindex].DI = 0;
+		labelindex++;
+		islabelline=0;
+	}
+	/*
+	 * calculate number of words we need
+	 */
+	int numberofwords = 1;
+	if ((arg1addresscode == 2)){
+		numberofwords+=2;
+	}
+	/* if order address code is 0,1 or 3*/
+	else{
+		numberofwords++;
+	}
+	IC += numberofwords;
+
+
 }
 
 
@@ -84,11 +110,47 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 	int arg1addresscode = getaddresscode(arg1);
 	int arg2addresscode = getaddresscode(arg2);
 
+	/*
+	 * only cmp - (opcode 1) can has target address code =0
+	 */
+	if ((arg1addresscode==0) && (ordercode!=1) ){
+		printf("Error in line %d: oder %s doesn't support direct address code for the target \n", linenumber, order);
+	}
 	WORD opLine = getword(0, arg1addresscode, arg2addresscode, ordercode);
 	printf("Word is %d-%d-%d-%d\n", ordercode, arg2addresscode, arg1addresscode, 0);
 	printf("The word is: %s\n", WORDtostring(opLine));
 	printf("The word with minus is: %s\n", WORDtostringwithminus(opLine));
 	memory[IC] = &opLine;
+	if (islabelline == 1){
+		symboltable[labelindex].value = IC;
+		symboltable[labelindex].DI = 0;
+		labelindex++;
+		islabelline=0;
+	}
+	/*
+	 * calculate number of words we need
+	 */
+	int numberofwords = 1;
+	if ((arg1addresscode == 3) && (arg2addresscode == 3)){
+		/* if both registers - they will share 1 word*/
+		numberofwords+=1;
+	}
+	else{
+		if ((arg1addresscode==0) || (arg1addresscode==1)|| (arg1addresscode==3)){
+			numberofwords+=1;
+		}
+		if (arg1addresscode==2){
+			numberofwords+=2;
+		}
+		if ((arg2addresscode==0) || (arg2addresscode==1) || (arg2addresscode==3)){
+			numberofwords+=1;
+		}
+		if (arg2addresscode==2){
+			numberofwords+=2;
+		}
+	}
+	IC += numberofwords;
+
 }
 
 void handleorder(int linenumber, char* curline, int index){
@@ -108,6 +170,15 @@ void handleorder(int linenumber, char* curline, int index){
 	//order without params
 	if (ordercode >= 14){
 		printf("order (with no param) is %s code is: %d\n", order, ordercode);
+		WORD opLine = getword(0, 0, 0, ordercode);
+		memory[IC] = &opLine;
+		if (islabelline == 1){
+			symboltable[labelindex].value = IC;
+			symboltable[labelindex].DI = 0;
+			labelindex++;
+			islabelline=0;
+		}
+		IC++;
 		return;
 	}
 
