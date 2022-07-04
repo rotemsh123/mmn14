@@ -55,8 +55,40 @@ int power(int a,int b){
 	return a;
 }
 
+char* WORDtostring(WORD word){
+	char* wordinstring;
+	int i=0;
+	wordinstring = (char*)malloc(11);
+	for (;i<=9; i++){
+		wordinstring[i] = (word.value)[9-i]+'0';
+	}
+	wordinstring[10] = '\0';
+	return wordinstring;
+}
 
 
+char* WORDtostringwithminus(WORD word){
+	char* wordinstring;
+	int i;
+	wordinstring = (char*)malloc(13);
+	for (i=0;i<=3; i++){
+		wordinstring[i] = (word.value)[9-i]+'0';
+	}
+	wordinstring[4] = '-';
+	for (i=5;i<=6; i++){
+		wordinstring[i] = (word.value)[10-i]+'0';
+	}
+	wordinstring[7] = '-';
+	for (i=8;i<=9; i++){
+		wordinstring[i] = (word.value)[11-i]+'0';
+	}
+	wordinstring[10] = '-';
+	for (i=11;i<=12; i++){
+		wordinstring[i] = (word.value)[12-i]+'0';
+	}
+	wordinstring[13] = '\0';
+	return wordinstring;
+}
 
 
 

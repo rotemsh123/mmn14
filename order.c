@@ -7,6 +7,90 @@
 
 #include "mmn14.h"
 
+
+/*
+ * 0-1: code type: A, R, E
+ * 2-3 op address code target
+ * 4-5 op address code source
+ * 6-9 operation code
+ */
+WORD getword(int codeType, int targetaddresscode, int sourceaddresscode, int ordercode){
+	WORD opLine;
+	int i;
+	/*
+	 * code type 0-1
+	 */
+	(opLine.value)[0]=0;
+	(opLine.value)[1]=0;
+	/*
+	 * target 2-3
+	 */
+	int targetaddresscodetemp = targetaddresscode;
+	for (i=2; i<=3; i++){
+		(opLine.value)[i]=targetaddresscodetemp % 2;
+		targetaddresscodetemp /=2;
+	}
+	/*
+	 * source 4-5
+	 */
+	int sourceaddresscodetemp = sourceaddresscode;
+	for (i=4; i<=5; i++){
+		(opLine.value)[i]=sourceaddresscodetemp % 2;
+		sourceaddresscodetemp /=2;
+	}
+	/*
+	 * operation 6-9
+	 */
+	int ordercodetemp = ordercode;
+	for (i=6; i<=9; i++){
+		(opLine.value)[i]=ordercodetemp %2;
+		ordercodetemp /=2;
+	}
+
+	return opLine;
+}
+
+/*
+ * handle all orders with 1 pram: not, clr, inc, dec, jmp, bne, get, prn, jsr
+ * the only argument is the target operand
+ */
+
+void handle1param(int linenumber, char* curline, int ordercode, char* order, int index){
+	if (indexof(",", curline, index) !=-1){
+		printf("Error in line %d: Too many operands for order: %s \n", linenumber, order);
+		return;
+	}
+	char* arg1 = getcharstillchar(curline, index, '\n');
+	int arg1addresscode = getaddresscode(arg1);
+
+	WORD opLine = getword(0, arg1addresscode, 0, ordercode);
+	printf("Word is %d-%d-%d-%d\n", ordercode, 0, arg1addresscode, 0);
+	printf("The word is: %s\n", WORDtostring(opLine));
+	printf("The word with minus is: %s\n", WORDtostringwithminus(opLine));
+	memory[IC] = &opLine;
+}
+
+
+void handle2param(int linenumber, char* curline, int ordercode, char* order, int index){
+	if (indexof(",", curline, index) ==-1){
+		printf("Error in line %d: missing operands for order: %s \n", linenumber, order);
+		return;
+	}
+	char* arg1 = getcharstillchar(curline, index, ',');
+	index = indexof(",", curline, index) +1;
+	index = ignorewhitechar(curline, index);
+	char* arg2 = getcharstillchar(curline, index, '\n');
+
+	int arg1addresscode = getaddresscode(arg1);
+	int arg2addresscode = getaddresscode(arg2);
+
+	WORD opLine = getword(0, arg1addresscode, arg2addresscode, ordercode);
+	printf("Word is %d-%d-%d-%d\n", ordercode, arg2addresscode, arg1addresscode, 0);
+	printf("The word is: %s\n", WORDtostring(opLine));
+	printf("The word with minus is: %s\n", WORDtostringwithminus(opLine));
+	memory[IC] = &opLine;
+}
+
 void handleorder(int linenumber, char* curline, int index){
 	char* order;
 	int ordercode;
@@ -38,36 +122,13 @@ void handleorder(int linenumber, char* curline, int index){
 
 	// order with 1 param
 	if (ordercode ==4 || ordercode == 5 || (ordercode >= 7 && ordercode <= 13) ){
-		printf("order (with 1 param) is %s code is: %d\n", order, ordercode);
-		if (indexof(",", curline, index) !=-1){
-			printf("Error in line %d: Too many operands for order: %s \n", linenumber, order);
-			return;
-		}
-		char* arg1 = getcharstillchar(curline, index, '\n');
-		printf("order %s with 1 param: arg1: %s\n", order, arg1);
-		int arg1addresscode = getaddresscode(arg1);
-		printf("arg1 addesscode is %d\n", arg1addresscode);
+		handle1param(linenumber, curline, ordercode, order, index);
 		return;
 	}
 
 	// order with 2 params
 	if (ordercode <=3 || ordercode == 6){
-		printf("order (with 2 params) is %s code is: %d\n", order, ordercode);
-		if (indexof(",", curline, index) ==-1){
-			printf("Error in line %d: missing operands for order: %s \n", linenumber, order);
-			return;
-		}
-		char* arg1 = getcharstillchar(curline, index, ',');
-		index = indexof(",", curline, index) +1;
-		index = ignorewhitechar(curline, index);
-		char* arg2 = getcharstillchar(curline, index, '\n');
-
-		printf("order %s with 2 params: arg1: %s,  arg2: %s\n", order, arg1, arg2);
-
-		int arg1addresscode = getaddresscode(arg1);
-		int arg2addresscode = getaddresscode(arg2);
-		printf("arg1 addesscode is %d, arg2 addresscode is %d\n", arg1addresscode, arg2addresscode);
-
+		handle2param(linenumber, curline, ordercode, order, index);
 		return;
 	}
 

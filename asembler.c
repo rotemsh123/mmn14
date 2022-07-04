@@ -60,6 +60,8 @@ char* runassembler(FILE* f){
 	char* text;
 	char* curline;
 	int linenumber = 0;
+	IC=100;
+	DC=0;
 	lastLine = 0;
 	labelindex = 0;
 	text = (char*)malloc (1000);
