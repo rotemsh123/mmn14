@@ -45,6 +45,8 @@ void handleorder(int linenumber, char* curline, int index){
 		}
 		char* arg1 = getcharstillchar(curline, index, '\n');
 		printf("order %s with 1 param: arg1: %s\n", order, arg1);
+		int arg1addresscode = getaddresscode(arg1);
+		printf("arg1 addesscode is %d\n", arg1addresscode);
 		return;
 	}
 
@@ -56,10 +58,15 @@ void handleorder(int linenumber, char* curline, int index){
 			return;
 		}
 		char* arg1 = getcharstillchar(curline, index, ',');
-		index = indexof(",", curline, index);
-		char* arg2 = getcharstillchar(curline, index+1, '\n');
+		index = indexof(",", curline, index) +1;
+		index = ignorewhitechar(curline, index);
+		char* arg2 = getcharstillchar(curline, index, '\n');
 
 		printf("order %s with 2 params: arg1: %s,  arg2: %s\n", order, arg1, arg2);
+
+		int arg1addresscode = getaddresscode(arg1);
+		int arg2addresscode = getaddresscode(arg2);
+		printf("arg1 addesscode is %d, arg2 addresscode is %d\n", arg1addresscode, arg2addresscode);
 
 		return;
 	}

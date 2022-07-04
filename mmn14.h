@@ -40,5 +40,6 @@ int labelindex;
 void handleorder(int linenumber, char* curline, int index);
 void handleInstructions(int linenumber, char* curline, int index);
 char* getcharstillchar(char* text, int start, char c);
+int getaddresscode(char* arg);
 
 #endif /* MMN14_H_ */
