@@ -11,7 +11,8 @@ m1
 bne LOOP
 END: hlt
 STR: .string "abcdef"
-LENGTH: .data 6,-9,15
+LENGTH: .data 16,-9,-16
 K: .data 22
 S1: .struct3 8, "ab"
 
+  
