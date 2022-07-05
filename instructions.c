@@ -34,7 +34,7 @@ WORD inttoword(char* string){
 	WORD w;
 	int d = stringtoint(string);
 	initword(&w);
-	printf("number in chars is: %s and int is: %d\n", string, d);
+	printf("char is: %s and int is: %d\n", string, d);
 	j = 0;
 
 	if (d<0){
@@ -92,17 +92,9 @@ void handledata(int linenumber, char* curline, int index) {
 		DC++;
 	}
 }
-void handlestring(int linenumber, char* curline, int index) {
-	char* string;
+
+void putstringindata(char* string){
 	int i, j;
-	index = index + 7;
-	index = ignorewhitechar(curline, index);
-	if (indexof(",", curline, index) != -1) {
-		printf("Error in line %d: Illegal char in string (','): %s \n",
-				linenumber, &(curline[index]));
-	}
-	index = indexof("\"", curline, index) + 1;
-	string = getcharstillchar(curline, index, '\"');
 	for (i = 0; i < strlen(string); i++) {
 		WORD w;
 		char c = string[i];
@@ -126,11 +118,46 @@ void handlestring(int linenumber, char* curline, int index) {
 	initword(&w);
 	datamemory[DC] = &w;
 	DC++;
+
+}
+void handlestring(int linenumber, char* curline, int index) {
+	char* string;
+	index = index + 7;
+	index = ignorewhitechar(curline, index);
+	if (indexof(",", curline, index) != -1) {
+		printf("Error in line %d: Illegal char in string (','): %s \n",
+				linenumber, &(curline[index]));
+	}
+	index = indexof("\"", curline, index) + 1;
+	string = getcharstillchar(curline, index, '\"');
+	putstringindata(string);
+
 	printf("String: %s\n", string);
 }
 void handlestruct(int linenumber, char* curline, int index) {
-	index = index + 7;
-	printf("Struct: %s", &(curline[index]));
+	char* arg1;
+	char* arg2;
+	WORD arg1word;
+	if (indexof(",", curline, index) ==-1){
+		printf("Error in line %d: missing operands for struct: %s \n", linenumber, &(curline[index]));
+		return;
+	}
+	index=indexof(" ", curline, index)+1;
+	ignorewhitechar(curline, index);
+	arg1 = getcharstillchar(curline, index, ',');
+	index = indexof(",", curline, index) +1;
+	index = indexof("\"", curline, index) + 1;
+	arg2 = getcharstillchar(curline, index, '\"');
+
+	/* First word is int to word*/
+	arg1word = inttoword(arg1);
+	printf("Word is: %s\n", WORDtostring(arg1word));
+	datamemory[DC] = &arg1word;
+	DC++;
+
+	/* Next words are the string*/
+	putstringindata(arg2);
+
 }
 void handleentry(int linenumber, char* curline, int index) {
 	index = index + 6;
