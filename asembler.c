@@ -54,7 +54,7 @@ int handlelabel(int linenumber, char* line, int index){
 	symboltable[labelindex].name = (char*)malloc(30);
 	strcpy(symboltable[labelindex].name, label);
 
-	printf ("label: %s\n", label);
+	/*printf ("label: %s\n", label);*/
 	return indexofdots+1;
 }
 

@@ -17,6 +17,7 @@ typedef struct {
 
 typedef struct{
 	int value[10];
+	char* labelname; /*If the value is label name, only in second round I can find it, so keep here the label name for now*/
 } WORD;
 
 WORD* memory[256];

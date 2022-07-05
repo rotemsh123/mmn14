@@ -7,34 +7,44 @@
 
 #include "mmn14.h"
 
-int stringtoint(char *str) {
+int stringtoint(char *string, int linenumber) {
 	int result;
 	int puiss;
+	int index=0, length;
+	index=ignorewhitechar(string,index);
 
+	length = strlen(string);
 	result = 0;
 	puiss = 1;
-	while (('-' == (*str)) || ((*str) == '+')) {
-		if (*str == '-')
+	while (('-' == string[index]) || (string[index] == '+')) {
+		if (string[index] == '-')
 			puiss = puiss * -1;
-		str++;
+		index++;
 	}
-	while ((*str >= '0') && (*str <= '9')) {
-		result = (result * 10) + ((*str) - '0');
-		str++;
+	while (index<length) {
+		if ((string[index] >= '0') && (string[index] <= '9')){
+			result = (result * 10) + (string[index] - '0');
+			index++;
+		}
+		else{
+			printf("ERROR in line %d: Expecting number and got char: %c\n",linenumber, string[index]);
+			break;
+		}
 	}
+
 	return (result * puiss);
 }
 
 /**
  * convert int into word
  */
-WORD inttoword(char* string){
+WORD inttoword(char* string, int linenumber){
 	int negative=0, j;
 	negative = 0;
 	WORD w;
-	int d = stringtoint(string);
+	int d = stringtoint(string, linenumber);
 	initword(&w);
-	printf("char is: %s and int is: %d\n", string, d);
+	/*printf("char is: %s and int is: %d\n", string, d);*/
 	j = 0;
 
 	if (d<0){
@@ -86,8 +96,8 @@ void handledata(int linenumber, char* curline, int index) {
 			lastarg = 1;
 		}
 
-		w = inttoword(string);
-		printf("Word is: %s\n", WORDtostring(w));
+		w = inttoword(string, linenumber);
+		/*printf("Word is: %s\n", WORDtostring(w));*/
 		datamemory[DC] = &w;
 		DC++;
 	}
@@ -100,14 +110,14 @@ void putstringindata(char* string){
 		char c = string[i];
 		int d = (int) c;
 		initword(&w);
-		printf("char %c is %d\n", c, d);
+		/*printf("char %c is %d\n", c, d);*/
 		j = 0;
 		while (d > 0) {
 			w.value[j] = d % 2;
 			d /= 2;
 			j++;
 		}
-		printf("Word is: %s\n", WORDtostring(w));
+		/*printf("Word is: %s\n", WORDtostring(w));*/
 		datamemory[DC] = &w;
 		DC++;
 	}
@@ -125,21 +135,20 @@ void handlestring(int linenumber, char* curline, int index) {
 	index = index + 7;
 	index = ignorewhitechar(curline, index);
 	if (indexof(",", curline, index) != -1) {
-		printf("Error in line %d: Illegal char in string (','): %s \n",
-				linenumber, &(curline[index]));
+		printf("ERROR in line %d: Illegal char in string (','): %s",linenumber, &(curline[index]));
 	}
 	index = indexof("\"", curline, index) + 1;
 	string = getcharstillchar(curline, index, '\"');
 	putstringindata(string);
 
-	printf("String: %s\n", string);
+	/*printf("String: %s\n", string);*/
 }
 void handlestruct(int linenumber, char* curline, int index) {
 	char* arg1;
 	char* arg2;
 	WORD arg1word;
 	if (indexof(",", curline, index) ==-1){
-		printf("Error in line %d: missing operands for struct: %s \n", linenumber, &(curline[index]));
+		printf("ERROR in line %d: missing operands for struct: %s \n", linenumber, &(curline[index]));
 		return;
 	}
 	index=indexof(" ", curline, index)+1;
@@ -150,8 +159,8 @@ void handlestruct(int linenumber, char* curline, int index) {
 	arg2 = getcharstillchar(curline, index, '\"');
 
 	/* First word is int to word*/
-	arg1word = inttoword(arg1);
-	printf("Word is: %s\n", WORDtostring(arg1word));
+	arg1word = inttoword(arg1, linenumber);
+	/*printf("Word is: %s\n", WORDtostring(arg1word));*/
 	datamemory[DC] = &arg1word;
 	DC++;
 
@@ -161,15 +170,15 @@ void handlestruct(int linenumber, char* curline, int index) {
 }
 void handleentry(int linenumber, char* curline, int index) {
 	index = index + 6;
-	printf("Entry: %s", &(curline[index]));
+	/*printf("Entry: %s", &(curline[index]));*/
 }
 void handleextern(int linenumber, char* curline, int index) {
 	index = index + 7;
-	printf("Extern: %s", &(curline[index]));
+	/*printf("Extern: %s", &(curline[index]));*/
 }
 
 void handleInstructions(int linenumber, char* curline, int index) {
-	printf("instruction line: %s", &(curline[index]));
+	/*printf("instruction line: %s", &(curline[index]));*/
 	if (islabelline == 1) {
 		symboltable[labelindex].value = DC;
 		symboltable[labelindex].DI = 1;
