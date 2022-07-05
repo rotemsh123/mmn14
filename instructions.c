@@ -38,13 +38,12 @@ int stringtoint(char *string, int linenumber) {
 /**
  * convert int into word
  */
-WORD inttoword(char* string, int linenumber){
+void inttoword(char* string, int linenumber, WORD* w){
 	int negative=0, j;
 	negative = 0;
-	WORD w;
 	int d = stringtoint(string, linenumber);
-	initword(&w);
-	/*printf("char is: %s and int is: %d\n", string, d);*/
+
+	printf("char is: %s and int is: %d\n", string, d);
 	j = 0;
 
 	if (d<0){
@@ -52,36 +51,35 @@ WORD inttoword(char* string, int linenumber){
 		negative = 1;
 	}
 	while (d != 0) {
-		w.value[j] = d % 2;
+		w[0].value[j] = d % 2;
 		d /= 2;
 		j++;
 	}
 	/*if number is negative, I switch each 0 to 1 and than add 1*/
 	if (negative == 1){
 		for (j=0; j<10; j++){
-			if(w.value[j] == 0){
-				w.value[j] = 1;
+			if(w[0].value[j] == 0){
+				w[0].value[j] = 1;
 			}
 			else {
-				w.value[j] = 0;
+				w[0].value[j] = 0;
 			}
 		}
 		/*now should add 1*/
 		for (j=0; j<10; j++){
-			if(w.value[j] == 0){
-				w.value[j] = 1;
+			if(w[0].value[j] == 0){
+				w[0].value[j] = 1;
 				break;
 			}
 			else{
-				w.value[j] = 0;
+				w[0].value[j] = 0;
 			}
 		}
 	}
-	return w;
+
 }
 void handledata(int linenumber, char* curline, int index) {
 	char* string;
-	WORD w;
 	int lastarg = 0;
 	index = index + 5;
 	index = ignorewhitechar(curline, index);
@@ -96,9 +94,9 @@ void handledata(int linenumber, char* curline, int index) {
 			lastarg = 1;
 		}
 
-		w = inttoword(string, linenumber);
-		/*printf("Word is: %s\n", WORDtostring(w));*/
-		datamemory[DC] = &w;
+		inttoword(string, linenumber,&datamemory[DC]);
+		printf("Word is: %s\n", WORDtostring(datamemory[DC]));
+
 		DC++;
 	}
 }
@@ -106,27 +104,25 @@ void handledata(int linenumber, char* curline, int index) {
 void putstringindata(char* string){
 	int i, j;
 	for (i = 0; i < strlen(string); i++) {
-		WORD w;
+
 		char c = string[i];
 		int d = (int) c;
-		initword(&w);
-		/*printf("char %c is %d\n", c, d);*/
+
+		printf("char %c is %d\n", c, d);
 		j = 0;
+
 		while (d > 0) {
-			w.value[j] = d % 2;
+			datamemory[DC].value[j] = d % 2;
 			d /= 2;
 			j++;
 		}
-		/*printf("Word is: %s\n", WORDtostring(w));*/
-		datamemory[DC] = &w;
+		printf("Word is: %s\n", WORDtostring(datamemory[DC]));
+
 		DC++;
 	}
 	/*
-	 * Add zero line at the end of the string
+	 * next line is zero at the end of the string
 	 */
-	WORD w;
-	initword(&w);
-	datamemory[DC] = &w;
 	DC++;
 
 }
@@ -141,12 +137,12 @@ void handlestring(int linenumber, char* curline, int index) {
 	string = getcharstillchar(curline, index, '\"');
 	putstringindata(string);
 
-	/*printf("String: %s\n", string);*/
+	printf("String: %s\n", string);
 }
 void handlestruct(int linenumber, char* curline, int index) {
 	char* arg1;
 	char* arg2;
-	WORD arg1word;
+
 	if (indexof(",", curline, index) ==-1){
 		printf("ERROR in line %d: missing operands for struct: %s \n", linenumber, &(curline[index]));
 		return;
@@ -159,9 +155,8 @@ void handlestruct(int linenumber, char* curline, int index) {
 	arg2 = getcharstillchar(curline, index, '\"');
 
 	/* First word is int to word*/
-	arg1word = inttoword(arg1, linenumber);
-	/*printf("Word is: %s\n", WORDtostring(arg1word));*/
-	datamemory[DC] = &arg1word;
+	inttoword(arg1, linenumber, &datamemory[DC]);
+	printf("Word is: %s\n", WORDtostring(datamemory[DC]));
 	DC++;
 
 	/* Next words are the string*/
@@ -170,15 +165,15 @@ void handlestruct(int linenumber, char* curline, int index) {
 }
 void handleentry(int linenumber, char* curline, int index) {
 	index = index + 6;
-	/*printf("Entry: %s", &(curline[index]));*/
+	printf("Entry: %s", &(curline[index]));
 }
 void handleextern(int linenumber, char* curline, int index) {
 	index = index + 7;
-	/*printf("Extern: %s", &(curline[index]));*/
+	printf("Extern: %s", &(curline[index]));
 }
 
 void handleInstructions(int linenumber, char* curline, int index) {
-	/*printf("instruction line: %s", &(curline[index]));*/
+	printf("instruction line: %s", &(curline[index]));
 	if (islabelline == 1) {
 		symboltable[labelindex].value = DC;
 		symboltable[labelindex].DI = 1;

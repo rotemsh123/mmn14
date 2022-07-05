@@ -20,8 +20,8 @@ typedef struct{
 	char* labelname; /*If the value is label name, only in second round I can find it, so keep here the label name for now*/
 } WORD;
 
-WORD* memory[256];
-WORD* datamemory[256];
+WORD memory[256];
+WORD datamemory[256];
 
 int IC;
 int DC;
@@ -31,7 +31,8 @@ char* preasembler(FILE* f);
 int ignorewhitechar(char* line,int ind);
 int compareignore(char* s1, char* s2);
 int indexof (char* c, char* s, int start);
-char* runassembler(FILE* f);
+void runassembler(FILE* f);
+void saveobjectfile(char* filename);
 
 int ordertrans(char* order);
 
@@ -55,6 +56,8 @@ int getaddresscode(char* arg);
 char* WORDtostring(WORD word);
 char* WORDtostringwithminus(WORD word);
 void printlabels();
-void initword(WORD* w);
+void initwords();
+int WORDtoInt(WORD w);
+char* trans32(int number);
 
 #endif /* MMN14_H_ */

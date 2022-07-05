@@ -14,43 +14,39 @@
  * 4-5 op address code source
  * 6-9 operation code
  */
-WORD getword(int codeType, int targetaddresscode, int sourceaddresscode, int ordercode){
-	WORD opLine;
+void getword(int codeType, int targetaddresscode, int sourceaddresscode, int ordercode, WORD* w){
+
 	int i;
-	int ordercodetemp;
-	int targetaddresscodetemp;
-	int sourceaddresscodetemp;
+
 	/*
 	 * code type 0-1
 	 */
-	(opLine.value)[0]=0;
-	(opLine.value)[1]=0;
+	(w[0].value)[0]=0;
+	(w[0].value)[1]=0;
+
 	/*
 	 * target 2-3
 	 */
-	targetaddresscodetemp = targetaddresscode;
 	for (i=2; i<=3; i++){
-		(opLine.value)[i]=targetaddresscodetemp % 2;
-		targetaddresscodetemp /=2;
+		(w[0].value)[i]=targetaddresscode % 2;
+		targetaddresscode /=2;
 	}
 	/*
 	 * source 4-5
 	 */
-	sourceaddresscodetemp = sourceaddresscode;
+
 	for (i=4; i<=5; i++){
-		(opLine.value)[i]=sourceaddresscodetemp % 2;
-		sourceaddresscodetemp /=2;
+		(w[0].value)[i]=sourceaddresscode % 2;
+		sourceaddresscode /=2;
 	}
 	/*
 	 * operation 6-9
 	 */
-	ordercodetemp = ordercode;
 	for (i=6; i<=9; i++){
-		(opLine.value)[i]=ordercodetemp %2;
-		ordercodetemp /=2;
+		(w[0].value)[i]=ordercode %2;
+		ordercode /=2;
 	}
 
-	return opLine;
 }
 
 /*
@@ -62,7 +58,6 @@ void handle1param(int linenumber, char* curline, int ordercode, char* order, int
 	char* arg1;
 	int arg1addresscode;
 	int numberofwords;
-	WORD opLine;
 	/*
 	 * only prn - (opcode 12) can has target address code =0
 	 */
@@ -76,13 +71,13 @@ void handle1param(int linenumber, char* curline, int ordercode, char* order, int
 		printf("ERROR in line %d: order %s doesn't support direct address code for the target \n", linenumber, order);
 	}
 
-	opLine = getword(0, arg1addresscode, 0, ordercode);
-	/*
-	 * printf("Word is %d-%d-%d-%d\n", ordercode, 0, arg1addresscode, 0);
-	 * printf("The word is: %s\n", WORDtostring(opLine));
-	 * printf("The word with minus is: %s\n", WORDtostringwithminus(opLine));
-	 */
-	memory[IC] = &opLine;
+	getword(0, arg1addresscode, 0, ordercode, &memory[IC]);
+
+	printf("Word is %d-%d-%d-%d\n", ordercode, 0, arg1addresscode, 0);
+	printf("The word is: %s\n", WORDtostring(memory[IC]));
+	printf("The word with minus is: %s\n", WORDtostringwithminus(memory[IC]));
+
+
 	if (islabelline == 1){
 		symboltable[labelindex].value = IC;
 		symboltable[labelindex].DI = 0;
@@ -112,7 +107,7 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 	int arg1addresscode;
 	int arg2addresscode;
 	int numberofwords;
-	WORD opLine;
+
 	if (indexof(",", curline, index) ==-1){
 		printf("ERROR in line %d: missing operands for order: %s \n", linenumber, order);
 		return;
@@ -131,13 +126,13 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 	if ((arg1addresscode==0) && (ordercode!=1) ){
 		printf("ERROR in line %d: order %s doesn't support direct address code for the target \n", linenumber, order);
 	}
-	opLine = getword(0, arg1addresscode, arg2addresscode, ordercode);
-	/*
+	getword(0, arg1addresscode, arg2addresscode, ordercode, &memory[IC]);
+
 	printf("Word is %d-%d-%d-%d\n", ordercode, arg2addresscode, arg1addresscode, 0);
-	printf("The word is: %s\n", WORDtostring(opLine));
-	printf("The word with minus is: %s\n", WORDtostringwithminus(opLine));
-	*/
-	memory[IC] = &opLine;
+	printf("The word in %d is: %s\n", IC, WORDtostring(memory[IC]));
+	printf("The word with minus is: %s\n", WORDtostringwithminus(memory[IC]));
+
+
 	if (islabelline == 1){
 		symboltable[labelindex].value = IC;
 		symboltable[labelindex].DI = 0;
@@ -173,8 +168,7 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 void handleorder(int linenumber, char* curline, int index){
 	char* order;
 	int ordercode;
-	WORD opLine;
-	/*printf("order line: %s", &(curline[index]));*/
+	printf("order line: %s", &(curline[index]));
 	index = ignorewhitechar(curline, index);
 	if (indexof(" ", curline, index)!=-1){
 		order = getcharstillchar(curline, index, ' ');
@@ -187,9 +181,9 @@ void handleorder(int linenumber, char* curline, int index){
 
 	/*order without params*/
 	if (ordercode >= 14){
-		/*printf("order (with no param) is %s code is: %d\n", order, ordercode);*/
-		opLine = getword(0, 0, 0, ordercode);
-		memory[IC] = &opLine;
+		printf("order (with no param) is %s code is: %d\n", order, ordercode);
+		getword(0, 0, 0, ordercode,&memory[IC]);
+
 		if (islabelline == 1){
 			symboltable[labelindex].value = IC;
 			symboltable[labelindex].DI = 0;

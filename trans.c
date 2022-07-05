@@ -1,33 +1,27 @@
 #include "mmn14.h"
 int power(int a,int b);
 char base32[32] = {'!','@','#','$','%','^','&','*','<','>','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v'};
-char final[2];
 char* opcode[16] = {"mov","cmp", "add", "sub","not", "clr", "lea", "inc", "dec", "jmp", "bne", "get", "prn", "jsr", "rts", "hlt"};
 
-char* trans32(unsigned long number){
-	int num[10];
-	int i=0,h=0;
-	int tmp=0;
-	int a=0,b=0;
-	for(i=9;i>=0;i--)
-	{
-		num[i]=number%10;
-		number=number/10;
+char* trans32(int number){
+	char* final;
+	final = (char*)malloc(3);
+	int i;
+	for (i=1; i>=0; i--){
+		final[i] = base32[number%32];
+		number/=32;
 	}
-
-	for(i=9;i>=0;i--)
-	{
-		tmp=tmp+num[i]*power(2,h);
-		h++;
-	}
-	a=tmp/32;
-	a=tmp-a*32;
-	tmp=tmp/32;
-	b=tmp/32;
-	b=tmp-b*32;
-	final[0]=base32[a];
-	final[1]=base32[b];
+	final[2] = '\0';
 	return final;
+}
+
+int WORDtoInt(WORD w){
+	int i;
+	int number=0;
+	for(i=0; i< 10; i++){
+		number = number + (w.value[i])*power(2,i);
+	}
+	return number;
 }
 
 int ordertrans(char* order){

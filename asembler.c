@@ -66,17 +66,20 @@ int isInstruction(char* curline, int index){
 	return 1;
 }
 
-char* runassembler(FILE* f){
-	char* text;
+void runassembler(FILE* f){
 	char* curline;
 	int linenumber = 0;
 	IC=100;
 	DC=0;
 	lastLine = 0;
 	labelindex = 0;
-	text = (char*)malloc (1000);
+	initwords();
+
 	curline = readline(f);
 	linenumber++;
+	/*
+	 * round 1
+	 */
 	do{
 		if (isEmptyLineOrComment(curline)!=0){
 
@@ -99,5 +102,34 @@ char* runassembler(FILE* f){
 	updatelabels();
 	printlabels();
 
-	return text;
+	/*
+	 * round 2
+	 */
+
+
+}
+
+/*
+ * this function goes over all memory and same it to the file in base 32
+ */
+void saveobjectfile(char* filename){
+	char* objectfilename;
+	FILE* objectfile;
+	int i;
+	objectfilename=(char*)malloc(80);
+	strcpy(objectfilename,filename);
+	strcat(objectfilename ,".ob");
+	objectfile = fopen (objectfilename, "w");
+
+	for (i=100; i<IC; i++){
+		WORD w = memory[i];
+		char* string = WORDtostring(w);
+		int wint = WORDtoInt(w);
+		char* i32 = trans32(wint);
+		printf("Address: %d (%s), value %s (int %d,  32: %s)\n", i, trans32(i), string, wint, i32);
+		fprintf(objectfile, "%s\t%s\n", trans32(i), i32);
+	}
+
+	fclose(objectfile);
+
 }

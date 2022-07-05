@@ -33,12 +33,14 @@ void handlefile(char* filename){
 	fclose(aftermacrofile);
 
 	amfile = fopen (fileaftermacro, "r");
-	text = runassembler(aftermacrofile);
+	runassembler(aftermacrofile);
 	fclose(amfile);
 
 	free (inputfilename);
 	/*free (text);*/
 	free (fileaftermacro);
+
+	saveobjectfile(filename);
 }
 
 int main(int argc, char **argv) {
