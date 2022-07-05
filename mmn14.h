@@ -54,5 +54,6 @@ int getaddresscode(char* arg);
 char* WORDtostring(WORD word);
 char* WORDtostringwithminus(WORD word);
 void printlabels();
+void initword(WORD* w);
 
 #endif /* MMN14_H_ */

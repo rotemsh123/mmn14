@@ -77,3 +77,9 @@ void printlabels(){
 		printf ("Label %s address %d\n" , symboltable[i].name, symboltable[i].value);
 	}
 }
+void initword(WORD* w){
+	int i;
+	for (i=0; i<10;i++){
+		w[0].value[i]=0;
+	}
+}

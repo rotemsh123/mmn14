@@ -12,8 +12,39 @@ void handledata(int linenumber, char* curline, int index){
 	printf("Data: %s", &(curline[index]));
 }
 void handlestring(int linenumber, char* curline, int index){
+	char* string;
+	int i,j;
 	index = index + 7;
-	printf("String: %s", &(curline[index]));
+	index = ignorewhitechar(curline, index);
+	if (indexof(",", curline, index) != -1){
+		printf("Error in line %d: Illegal char in string (','): %s \n", linenumber, &(curline[index]));
+	}
+	index = indexof("\"", curline, index)+1;
+	string = getcharstillchar(curline, index, '\"');
+	for (i=0;i<strlen(string); i++){
+		WORD w;
+		char c = string[i];
+		int d = (int)c;
+		initword(&w);
+		printf ("char %c is %d\n", c, d);
+		j=0;
+		while (d>0){
+			w.value[j]=d % 2;
+			d /=2;
+			j++;
+		}
+		printf("Word is: %s\n", WORDtostring(w));
+		datamemory[DC] = &w;
+		DC++;
+	}
+	/*
+	 * Add zero line at the end of the string
+	 */
+	WORD w;
+	initword(&w);
+	datamemory[DC] = &w;
+	DC++;
+	printf("String: %s\n", string);
 }
 void handlestruct(int linenumber, char* curline, int index){
 	index = index + 7;
@@ -30,9 +61,14 @@ void handleextern(int linenumber, char* curline, int index){
 
 
 void handleInstructions(int linenumber, char* curline, int index){
-	WORD w;
-	int i;
 	printf("instruction line: %s", &(curline[index]));
+	if (islabelline == 1){
+		symboltable[labelindex].value = DC;
+		symboltable[labelindex].DI = 1;
+		labelindex++;
+		islabelline=0;
+	}
+
 	index = ignorewhitechar(curline, index);
 	if (strncmp(&(curline[index]), ".data ", 6) ==0){
 		handledata(linenumber, curline, index);
@@ -52,19 +88,6 @@ void handleInstructions(int linenumber, char* curline, int index){
 	else{
 		printf("ERROR in line %d: Illegal instruction: %s", linenumber, &(curline[index]));
 	}
-
-	for (i=0; i<=9; i++){
-		w.value[i] = 0;
-	}
-	datamemory[DC] = &w;
-
-	if (islabelline == 1){
-		symboltable[labelindex].value = DC;
-		symboltable[labelindex].DI = 1;
-		labelindex++;
-		islabelline=0;
-	}
-	DC++;
 
 
 }
