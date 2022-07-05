@@ -30,6 +30,8 @@ void handleextern(int linenumber, char* curline, int index){
 
 
 void handleInstructions(int linenumber, char* curline, int index){
+	WORD w;
+	int i;
 	printf("instruction line: %s", &(curline[index]));
 	index = ignorewhitechar(curline, index);
 	if (strncmp(&(curline[index]), ".data ", 6) ==0){
@@ -50,8 +52,7 @@ void handleInstructions(int linenumber, char* curline, int index){
 	else{
 		printf("ERROR in line %d: Illegal instruction: %s", linenumber, &(curline[index]));
 	}
-	WORD w;
-	int i;
+
 	for (i=0; i<=9; i++){
 		w.value[i] = 0;
 	}

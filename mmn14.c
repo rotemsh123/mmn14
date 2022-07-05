@@ -2,6 +2,7 @@
 REGISTER r0, r1, r2, r3, r4, r5, r6, r7, PSW;
 FILE* inputFile;
 FILE* aftermacrofile;
+FILE* amfile;
 
 void handlefile(char* filename){
 	char* text;
@@ -27,12 +28,13 @@ void handlefile(char* filename){
 	fileaftermacro=(char*)malloc(80);
 	strcpy(fileaftermacro,filename);
 	strcat(fileaftermacro, ".am");
-	aftermacrofile = fopen (fileaftermacro, "rw");
+	aftermacrofile = fopen (fileaftermacro, "w");
 	fprintf(aftermacrofile, "%s", text);
-
-	text = runassembler(aftermacrofile);
-
 	fclose(aftermacrofile);
+
+	amfile = fopen (fileaftermacro, "r");
+	text = runassembler(aftermacrofile);
+	fclose(amfile);
 
 	free (inputfilename);
 	/*free (text);*/
