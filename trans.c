@@ -5,8 +5,8 @@ char* opcode[16] = {"mov","cmp", "add", "sub","not", "clr", "lea", "inc", "dec",
 
 char* trans32(int number){
 	char* final;
-	final = (char*)malloc(3);
 	int i;
+	final = (char*)malloc(3);
 	for (i=1; i>=0; i--){
 		final[i] = base32[number%32];
 		number/=32;

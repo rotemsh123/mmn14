@@ -39,9 +39,10 @@ int stringtoint(char *string, int linenumber) {
  * convert int into word
  */
 void inttoword(char* string, int linenumber, WORD* w){
+	int d;
 	int negative=0, j;
 	negative = 0;
-	int d = stringtoint(string, linenumber);
+	d = stringtoint(string, linenumber);
 
 	printf("char is: %s and int is: %d\n", string, d);
 	j = 0;
