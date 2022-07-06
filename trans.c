@@ -19,7 +19,7 @@ int WORDtoInt(WORD w){
 	int i;
 	int number=0;
 	for(i=0; i< 10; i++){
-		number = number + (w.value[i])*power(2,i);
+		number = number + (w.value[i])*power(2,(i));
 	}
 	return number;
 }

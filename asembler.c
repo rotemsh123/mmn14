@@ -123,13 +123,21 @@ void saveobjectfile(char* filename){
 
 	for (i=100; i<IC; i++){
 		WORD w = memory[i];
-		char* string = WORDtostring(w);
+		char* string = WORDtostringwithminus(w);
 		int wint = WORDtoInt(w);
 		char* i32 = trans32(wint);
 		printf("Address: %d (%s), value %s (int %d,  32: %s)\n", i, trans32(i), string, wint, i32);
 		fprintf(objectfile, "%s\t%s\n", trans32(i), i32);
 	}
 
+	for (i=0; i<DC; i++){
+		WORD w = datamemory[i];
+		char* string = WORDtostringwithminus(w);
+		int wint = WORDtoInt(w);
+		char* i32 = trans32(wint);
+		printf("Address: %d (%s), value %s (int %d,  32: %s)\n", i+IC, trans32(i+IC), string, wint, i32);
+		fprintf(objectfile, "%s\t%s\n", trans32(i+IC), i32);
+	}
 	fclose(objectfile);
 
 }

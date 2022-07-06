@@ -14,7 +14,7 @@
  * 4-5 op address code source
  * 6-9 operation code
  */
-void getword(int codeType, int targetaddresscode, int sourceaddresscode, int ordercode, WORD* w){
+void getword(int codeType, int sourceaddresscode, int targetaddresscode, int ordercode, WORD* w){
 
 	int i;
 
@@ -71,7 +71,7 @@ void handle1param(int linenumber, char* curline, int ordercode, char* order, int
 		printf("ERROR in line %d: order %s doesn't support direct address code for the target \n", linenumber, order);
 	}
 
-	getword(0, arg1addresscode, 0, ordercode, &memory[IC]);
+	getword(0, 0, arg1addresscode, ordercode, &memory[IC]);
 
 	printf("Word is %d-%d-%d-%d\n", ordercode, 0, arg1addresscode, 0);
 	printf("The word is: %s\n", WORDtostring(memory[IC]));
