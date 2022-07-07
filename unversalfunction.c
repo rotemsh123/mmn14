@@ -91,3 +91,14 @@ void initwords(){
 		}
 	}
 }
+
+int getlabeladdress(char* labelname){
+	int i;
+	for (i=0; i< labelindex; i++){
+		if (strcmp(symboltable[i].name, labelname)==0){
+			return (symboltable[i]).value;
+		}
+	}
+	printf ("ERROR. label: '%s' doesn't exist\n", labelname);
+	return 0;
+}

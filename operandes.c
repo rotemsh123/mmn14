@@ -27,8 +27,16 @@ int getaddresscode(char* arg){
 	 * if I'll not find the label eventually, it will become error
 	 */
 	return 1;
-
-
-
-
 }
+
+/*
+ * translate args to list of WORDs
+ *
+WORD* getWORDfromargs(int argc, char** args){
+	int i;
+	char* arg;
+	for (i=0; i< argc; i++){
+		arg = args[i];
+		if
+	}
+}*/

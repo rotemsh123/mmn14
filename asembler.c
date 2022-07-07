@@ -25,6 +25,23 @@ void updatelabels(){
 	}
 }
 
+
+
+/*
+ * in the second round - skip the labels
+ */
+int skiplabel(int linenumber, char* curline, int index){
+
+	int indexofdots;
+	index = ignorewhitechar(curline, index);
+	indexofdots = indexof(":", curline, index);
+	if (indexofdots==-1){
+		return index;
+	}
+	return indexofdots+1;
+}
+
+
 /*
  * check if there is label in this line, if there is,
  * takes the label and put it into the
@@ -78,21 +95,23 @@ int isInstruction(char* curline, int index){
 	return 1;
 }
 
-void runassembler(FILE* f){
+void runassembler(char* filename){
 	char* curline;
-	int linenumber = 0;
+	FILE* amfile;
+	int linenumber = 1;
 	IC=100;
 	DC=0;
 	lastLine = 0;
 	labelindex = 0;
 	entryindex = 0;
 	externindex =0;
-	initwords();
 
-	curline = readline(f);
-	linenumber++;
+	amfile = fopen (filename, "r");
+
+	curline = readline(amfile);
+
 	/*
-	 * round 1
+	 * round 1: build the symbol table
 	 */
 	do{
 		if (isEmptyLineOrComment(curline)!=0){
@@ -101,25 +120,51 @@ void runassembler(FILE* f){
 			index = handlelabel(linenumber, curline, index);
 			if(isInstruction(curline, index)==0){
 				symboltable[labelindex].value = DC;
-				handleInstructions(linenumber, curline, index);
+				handleInstructionsLabel(linenumber, curline, index);
 			}
 			else {
 				symboltable[labelindex].value = IC;
-				handleorder(linenumber, curline, index);
+				handleorderLabel(linenumber, curline, index);
 			}
 		}
-		curline = readline(f);
+		curline = readline(amfile);
 		linenumber++;
 	}
 	while (lastLine!=1);
+	fclose(amfile);
 
 	updatelabels();
 	printlabels();
 
 	/*
-	 * round 2
+	 * round 2: build the rest
 	 */
+	printf ("\n\n*** Starting round 2 ***\n");
+	IC = 100;
+	DC = 0;
+	amfile = fopen (filename, "r");
+	linenumber = 1;
+	lastLine = 0;
+	initwords();
+	curline = readline(amfile);
 
+	do{
+		if (isEmptyLineOrComment(curline)!=0){
+
+			int index = 0;
+			index = skiplabel(linenumber, curline, index);
+			if(isInstruction(curline, index)==0){
+				handleInstructions(linenumber, curline, index);
+			}
+			else {
+				handleorder(linenumber, curline, index);
+			}
+		}
+		curline = readline(amfile);
+		linenumber++;
+	}
+	while (lastLine!=1);
+	fclose(amfile);
 
 }
 
@@ -143,7 +188,7 @@ void saveobjectfile(char* filename){
 		printf("Address: %d (%s), value %s (int %d,  32: %s)\n", i, trans32(i), string, wint, i32);
 		fprintf(objectfile, "%s\t%s\n", trans32(i), i32);
 	}
-
+	printf("Starting Data\n");
 	for (i=0; i<DC; i++){
 		WORD w = datamemory[i];
 		char* string = WORDtostringwithminus(w);
@@ -156,21 +201,14 @@ void saveobjectfile(char* filename){
 
 }
 
-int getlabeladdress(char* labelname){
-	int i;
-	for (i=0; i< labelindex; i++){
-		if (strcmp(symboltable[i].name, labelname)==0){
-			return (symboltable[i]).value;
-		}
-	}
-	printf ("ERROR. label: '%s' doesn't exist\n", labelname);
-	return 0;
-}
-
 void saveentryfile(char* filename){
 	char* entryfilename;
 	FILE* entryfile;
 	int i;
+	if (entryindex==0){
+		/*no entry in the file so file will not be created*/
+		return;
+	}
 	entryfilename=(char*)malloc(80);
 	strcpy(entryfilename,filename);
 	strcat(entryfilename ,".ent");

@@ -50,6 +50,93 @@ void getword(int codeType, int sourceaddresscode, int targetaddresscode, int ord
 }
 
 /*
+ * this function initiallize the words when the argument is struct
+ * first word is the struct adress
+ * second word is the struct field number
+ */
+void initializestructwords(char* arg, int linenumber){
+	/*struct with 2 words. first is the lable address and second is 1 or 2 (first field or second in the struct)*/
+	char* labelname = getcharstillchar(arg, 0, '.');
+	int lableadress = getlabeladdress(labelname);
+	WORD w;
+	int i;
+	int structexist=0;
+	/* put the A (00) R - in entry table (10) E - in external table (01) field ()*/
+	for (i=0;i<labelindex; i++){
+		printf("Label: '%s'\n",entry[i] );
+		if (strcmp(symboltable[i].name, labelname) == 0){
+			w.value[0] = 0;
+			w.value[1] = 1;
+			structexist = 1;
+			break;
+		}
+	}
+	for (i=0;i<externindex; i++){
+		printf("external: '%s'\n",external[i] );
+		if (strcmp(external[i], labelname) == 0){
+			w.value[0] = 1;
+			w.value[1] = 0;
+			structexist =1;
+			break;
+		}
+	}
+	/*meaning I couldnt find the struct in the file*/
+	if (structexist==0){
+		printf("ERROR in line %d: Illegal struct name: %s \n", linenumber, labelname);
+		w.value[0] = 0;
+		w.value[1] = 0;
+	}
+
+	for (i=2; i<=9; i++){
+		w.value[i] = lableadress%2;
+		lableadress/=2;
+	}
+	memory[IC] = w;
+	IC++;
+
+	int index = indexof(".", arg, 0)+1;
+
+	char* structnumber = (char*) malloc(2);
+	strncpy(structnumber, &arg[index], 1);
+	structnumber[1]= '\0';
+
+
+	WORD w2;
+	for (i=0; i<=9; i++){
+		w2.value[i]=0;
+	}
+	if (strcmp(structnumber , "1")==0){
+		w2.value[2]=1;
+	}
+	else if (strcmp(structnumber , "2")==0 ){
+		w2.value[3]=1;
+	}
+	else{
+		printf("ERROR in line %d: Illegal struct field (must be 1 or 2): %s \n", linenumber, labelname);
+	}
+
+
+	memory[IC] = w2;
+	IC++;
+}
+
+
+void handleArg(char* arg, int linenumber){
+	int argaddresscode;
+	int numberofwords;
+	argaddresscode = getaddresscode(arg);
+	numberofwords = 0;
+	if ((argaddresscode == 2)){
+		initializestructwords(arg, linenumber);
+	}
+	/* if order address code is 0,1 or 3*/
+	else{
+		numberofwords++;
+	}
+	IC += numberofwords;
+
+}
+/*
  * handle all orders with 1 pram: not, clr, inc, dec, jmp, bne, get, prn, jsr
  * the only argument is the target operand
  */
@@ -57,7 +144,6 @@ void getword(int codeType, int sourceaddresscode, int targetaddresscode, int ord
 void handle1param(int linenumber, char* curline, int ordercode, char* order, int index){
 	char* arg1;
 	int arg1addresscode;
-	int numberofwords;
 	/*
 	 * only prn - (opcode 12) can has target address code =0
 	 */
@@ -72,10 +158,128 @@ void handle1param(int linenumber, char* curline, int ordercode, char* order, int
 	}
 
 	getword(0, 0, arg1addresscode, ordercode, &memory[IC]);
+	IC++;
+	/*
+	 * add the arg to the memory
+	 * */
+	handleArg(arg1, linenumber);
 
 	printf("Word is %d-%d-%d-%d\n", ordercode, 0, arg1addresscode, 0);
 	printf("The word is: %s\n", WORDtostring(memory[IC]));
 	printf("The word with minus is: %s\n", WORDtostringwithminus(memory[IC]));
+
+
+}
+
+
+
+
+void handle2param(int linenumber, char* curline, int ordercode, char* order, int index){
+	char* arg1;
+	char* arg2;
+	int arg1addresscode;
+	int arg2addresscode;
+
+	if (indexof(",", curline, index) ==-1){
+		printf("ERROR in line %d: missing operands for order: %s \n", linenumber, order);
+		return;
+	}
+	arg1 = getcharstillchar(curline, index, ',');
+	index = indexof(",", curline, index) +1;
+	index = ignorewhitechar(curline, index);
+	arg2 = getcharstillchar(curline, index, '\n');
+
+	arg1addresscode = getaddresscode(arg1);
+	arg2addresscode = getaddresscode(arg2);
+
+
+	/*
+	 * only cmp - (opcode 1) can has target address code =0
+	 */
+	if ((arg1addresscode==0) && (ordercode!=1) ){
+		printf("ERROR in line %d: order %s doesn't support direct address code for the target \n", linenumber, order);
+	}
+	getword(0, arg1addresscode, arg2addresscode, ordercode, &memory[IC]);
+
+	printf("Word is %d-%d-%d-%d\n", ordercode, arg2addresscode, arg1addresscode, 0);
+	printf("The word in %d is: %s\n", IC, WORDtostring(memory[IC]));
+	printf("The word with minus is: %s\n", WORDtostringwithminus(memory[IC]));
+
+	IC++;
+
+	/*
+	 * add the arg to the memory
+	 * */
+	if ((arg1addresscode == 3) && (arg2addresscode == 3)){
+		/* if both registers - they will share 1 word*/
+		IC++;
+	}
+	else{
+		handleArg(arg1, linenumber);
+		handleArg(arg2, linenumber);
+	}
+
+}
+
+void handleorder(int linenumber, char* curline, int index){
+	char* order;
+	int ordercode;
+	printf("order line: %s", &(curline[index]));
+	index = ignorewhitechar(curline, index);
+	if (indexof(" ", curline, index)!=-1){
+		order = getcharstillchar(curline, index, ' ');
+	}
+	else{
+		order = getcharstillchar(curline, index, '\n');
+	}
+
+	ordercode = ordertrans(order);
+
+	/*order without params*/
+	if (ordercode >= 14){
+		printf("order (with no param) is %s code is: %d\n", order, ordercode);
+		getword(0, 0, 0, ordercode,&memory[IC]);
+		return;
+	}
+
+	index = indexof(" ", curline, index);
+	index = ignorewhitechar(curline, index);
+
+	if (index == -1){
+		printf("ERROR in line %d: missing first operand for order: %s \n", linenumber, order);
+		return;
+	}
+
+
+	/*order with 1 param*/
+	if (ordercode ==4 || ordercode == 5 || (ordercode >= 7 && ordercode <= 13) ){
+		handle1param(linenumber, curline, ordercode, order, index);
+		return;
+	}
+
+	/*order with 2 params*/
+	if (ordercode <=3 || ordercode == 6){
+		handle2param(linenumber, curline, ordercode, order, index);
+		return;
+	}
+
+
+	printf("ERROR in line %d: Illegal order: %s \n", linenumber, order);
+
+}
+
+/*
+ * round 1 of order
+ *
+ */
+
+void handle1paramLabel(int linenumber, char* curline, int ordercode, char* order, int index){
+	char* arg1;
+	int arg1addresscode;
+	int numberofwords;
+
+	arg1 = getcharstillchar(curline, index, '\n');
+	arg1addresscode = getaddresscode(arg1);
 
 
 	if (islabelline == 1){
@@ -101,17 +305,13 @@ void handle1param(int linenumber, char* curline, int ordercode, char* order, int
 }
 
 
-void handle2param(int linenumber, char* curline, int ordercode, char* order, int index){
+void handle2paramLabel(int linenumber, char* curline, int ordercode, char* order, int index){
 	char* arg1;
 	char* arg2;
 	int arg1addresscode;
 	int arg2addresscode;
 	int numberofwords;
 
-	if (indexof(",", curline, index) ==-1){
-		printf("ERROR in line %d: missing operands for order: %s \n", linenumber, order);
-		return;
-	}
 	arg1 = getcharstillchar(curline, index, ',');
 	index = indexof(",", curline, index) +1;
 	index = ignorewhitechar(curline, index);
@@ -119,18 +319,6 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 
 	arg1addresscode = getaddresscode(arg1);
 	arg2addresscode = getaddresscode(arg2);
-
-	/*
-	 * only cmp - (opcode 1) can has target address code =0
-	 */
-	if ((arg1addresscode==0) && (ordercode!=1) ){
-		printf("ERROR in line %d: order %s doesn't support direct address code for the target \n", linenumber, order);
-	}
-	getword(0, arg1addresscode, arg2addresscode, ordercode, &memory[IC]);
-
-	printf("Word is %d-%d-%d-%d\n", ordercode, arg2addresscode, arg1addresscode, 0);
-	printf("The word in %d is: %s\n", IC, WORDtostring(memory[IC]));
-	printf("The word with minus is: %s\n", WORDtostringwithminus(memory[IC]));
 
 
 	if (islabelline == 1){
@@ -165,7 +353,7 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 
 }
 
-void handleorder(int linenumber, char* curline, int index){
+void handleorderLabel(int linenumber, char* curline, int index){
 	char* order;
 	int ordercode;
 	printf("order line: %s", &(curline[index]));
@@ -181,9 +369,6 @@ void handleorder(int linenumber, char* curline, int index){
 
 	/*order without params*/
 	if (ordercode >= 14){
-		printf("order (with no param) is %s code is: %d\n", order, ordercode);
-		getword(0, 0, 0, ordercode,&memory[IC]);
-
 		if (islabelline == 1){
 			symboltable[labelindex].value = IC;
 			symboltable[labelindex].DI = 0;
@@ -197,25 +382,18 @@ void handleorder(int linenumber, char* curline, int index){
 	index = indexof(" ", curline, index);
 	index = ignorewhitechar(curline, index);
 
-	if (index == -1){
-		printf("ERROR in line %d: missing first operand for order: %s \n", linenumber, order);
-		return;
-	}
-
 
 	/*order with 1 param*/
 	if (ordercode ==4 || ordercode == 5 || (ordercode >= 7 && ordercode <= 13) ){
-		handle1param(linenumber, curline, ordercode, order, index);
+		handle1paramLabel(linenumber, curline, ordercode, order, index);
 		return;
 	}
 
 	/*order with 2 params*/
 	if (ordercode <=3 || ordercode == 6){
-		handle2param(linenumber, curline, ordercode, order, index);
+		handle2paramLabel(linenumber, curline, ordercode, order, index);
 		return;
 	}
 
-
-	printf("ERROR in line %d: Illegal order: %s \n", linenumber, order);
 
 }

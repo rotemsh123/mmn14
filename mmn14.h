@@ -35,7 +35,7 @@ char* preasembler(FILE* f);
 int ignorewhitechar(char* line,int ind);
 int compareignore(char* s1, char* s2);
 int indexof (char* c, char* s, int start);
-void runassembler(FILE* f);
+void runassembler(char* filename);
 void saveobjectfile(char* filename);
 void saveentryfile(char* filename);
 
@@ -54,6 +54,9 @@ typedef struct {
 LABEL symboltable[50];
 int labelindex;
 
+void handleorderLabel(int linenumber, char* curline, int index);
+void handleInstructionsLabel(int linenumber, char* curline, int index);
+
 void handleorder(int linenumber, char* curline, int index);
 void handleInstructions(int linenumber, char* curline, int index);
 char* getcharstillchar(char* text, int start, char c);
@@ -65,5 +68,6 @@ void initwords();
 int WORDtoInt(WORD w);
 char* trans32(int number);
 int intructionlinetype(char* curline, int index);
+int getlabeladdress(char* labelname);
 
 #endif /* MMN14_H_ */
