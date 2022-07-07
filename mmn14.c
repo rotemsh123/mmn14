@@ -41,6 +41,7 @@ void handlefile(char* filename){
 	free (fileaftermacro);
 
 	saveobjectfile(filename);
+	saveentryfile(filename);
 }
 
 int main(int argc, char **argv) {

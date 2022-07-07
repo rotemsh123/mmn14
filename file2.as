@@ -1,3 +1,7 @@
+MAIN: 		.entry LOOP
+.entry LENGTH
+			.extern L3
+S1: .extern W
 MAIN: mov S1.1 ,LENGTH
 add r2,STR
 MAIN: jmp END, 5

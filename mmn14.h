@@ -22,6 +22,10 @@ typedef struct{
 
 WORD memory[256];
 WORD datamemory[256];
+char* entry[100];
+int entryindex;
+char* external[100];
+int externindex;
 
 int IC;
 int DC;
@@ -33,6 +37,7 @@ int compareignore(char* s1, char* s2);
 int indexof (char* c, char* s, int start);
 void runassembler(FILE* f);
 void saveobjectfile(char* filename);
+void saveentryfile(char* filename);
 
 int ordertrans(char* order);
 
@@ -59,5 +64,6 @@ void printlabels();
 void initwords();
 int WORDtoInt(WORD w);
 char* trans32(int number);
+int intructionlinetype(char* curline, int index);
 
 #endif /* MMN14_H_ */

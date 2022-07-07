@@ -165,15 +165,57 @@ void handlestruct(int linenumber, char* curline, int index) {
 
 }
 void handleentry(int linenumber, char* curline, int index) {
+	char* entrychar;
 	index = index + 6;
-	printf("Entry: %s", &(curline[index]));
+	index = ignorewhitechar(curline, index);
+	entrychar = getcharstillchar(curline, index, '\n');
+	printf("Entry: %s", entrychar);
+	entry[entryindex] = entrychar;
+	entryindex++;
 }
 void handleextern(int linenumber, char* curline, int index) {
+	char* externalchar;
 	index = index + 7;
-	printf("Extern: %s", &(curline[index]));
+	index = ignorewhitechar(curline, index);
+	externalchar = getcharstillchar(curline, index, '\n');
+	printf("Extern: %s", externalchar);
+	external[externindex] = externalchar;
+	externindex++;
+}
+
+/*
+ * 0 for .data
+ * 1 for .string
+ * 2 for .struct
+ * 3 for .entry
+ * 4 for .extern
+ * -1 for error
+ */
+int intructionlinetype(char* curline, int index){
+	index = ignorewhitechar(curline, index);
+	if (strncmp(&(curline[index]), ".data ", 6) == 0) {
+		return 0;
+	}
+	if (strncmp(&(curline[index]), ".string ", 8) == 0) {
+		return 1;
+	}
+	if (strncmp(&(curline[index]), ".struct ", 8) == 0) {
+		return 2;
+	}
+	if (strncmp(&(curline[index]), ".entry ", 7) == 0) {
+		return 3;
+	}
+	if (strncmp(&(curline[index]), ".extern ", 8) == 0) {
+		return 4;
+	}
+	return -1;
+
 }
 
 void handleInstructions(int linenumber, char* curline, int index) {
+	int instructiontype;
+	index = ignorewhitechar(curline, index);
+	instructiontype = intructionlinetype(curline, index);
 	printf("instruction line: %s", &(curline[index]));
 	if (islabelline == 1) {
 		symboltable[labelindex].value = DC;
@@ -181,19 +223,22 @@ void handleInstructions(int linenumber, char* curline, int index) {
 		labelindex++;
 		islabelline = 0;
 	}
-
-	index = ignorewhitechar(curline, index);
-	if (strncmp(&(curline[index]), ".data ", 6) == 0) {
+	if (instructiontype == 0) {
 		handledata(linenumber, curline, index);
-	} else if (strncmp(&(curline[index]), ".string ", 8) == 0) {
+	}
+	else if (instructiontype == 1) {
 		handlestring(linenumber, curline, index);
-	} else if (strncmp(&(curline[index]), ".struct ", 8) == 0) {
+	}
+	else if (instructiontype == 2) {
 		handlestruct(linenumber, curline, index);
-	} else if (strncmp(&(curline[index]), ".entry ", 7) == 0) {
+	}
+	else if (instructiontype == 3) {
 		handleentry(linenumber, curline, index);
-	} else if (strncmp(&(curline[index]), ".extern ", 8) == 0) {
+	}
+	else if (instructiontype == 4) {
 		handleextern(linenumber, curline, index);
-	} else {
+	}
+	else {
 		printf("ERROR in line %d: Illegal instruction: %s", linenumber,
 				&(curline[index]));
 	}

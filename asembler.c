@@ -30,18 +30,19 @@ void updatelabels(){
  * takes the label and put it into the
  * label table with the current address
  */
-int handlelabel(int linenumber, char* line, int index){
+int handlelabel(int linenumber, char* curline, int index){
 
 	int indexofdots;
 	char* label;
 	int i;
-	index = ignorewhitechar(line, index);
-	indexofdots = indexof(":", line, index);
+	int instructiontype;
+	index = ignorewhitechar(curline, index);
+	indexofdots = indexof(":", curline, index);
 	if (indexofdots==-1){
 		return index;
 	}
 	/* if there is ":" in the line, we take the lable and handle it*/
-	label = getcharstillchar(line, index, ':');
+	label = getcharstillchar(curline, index, ':');
 	/* check if this label already exists*/
 
 	for (i=0; i< labelindex; i++){
@@ -50,6 +51,16 @@ int handlelabel(int linenumber, char* line, int index){
 		}
 	}
 
+	/*Ignore label in .entry or .extern lines*/
+	instructiontype = intructionlinetype(curline, indexofdots+1);
+	if (instructiontype == 3){
+		printf ("WARNING in line %d. label: %s is ignored because it is in .entry line\n", linenumber, label);
+		return indexofdots+1;
+	}
+	if (instructiontype == 4){
+		printf ("WARNING in line %d. label: %s is ignored because it is in .extern line\n", linenumber, label);
+		return indexofdots+1;
+	}
 	islabelline =1;
 	symboltable[labelindex].name = (char*)malloc(30);
 	strcpy(symboltable[labelindex].name, label);
@@ -63,6 +74,7 @@ int isInstruction(char* curline, int index){
 	if (strncmp(".", &(curline[index]),1) ==0){
 		return 0;
 	}
+
 	return 1;
 }
 
@@ -73,6 +85,8 @@ void runassembler(FILE* f){
 	DC=0;
 	lastLine = 0;
 	labelindex = 0;
+	entryindex = 0;
+	externindex =0;
 	initwords();
 
 	curline = readline(f);
@@ -141,3 +155,30 @@ void saveobjectfile(char* filename){
 	fclose(objectfile);
 
 }
+
+int getlabeladdress(char* labelname){
+	int i;
+	for (i=0; i< labelindex; i++){
+		if (strcmp(symboltable[i].name, labelname)==0){
+			return (symboltable[i]).value;
+		}
+	}
+	printf ("ERROR. label: '%s' doesn't exist\n", labelname);
+	return 0;
+}
+
+void saveentryfile(char* filename){
+	char* entryfilename;
+	FILE* entryfile;
+	int i;
+	entryfilename=(char*)malloc(80);
+	strcpy(entryfilename,filename);
+	strcat(entryfilename ,".ent");
+	entryfile = fopen (entryfilename, "w");
+
+	for (i=0; i<entryindex; i++){
+		fprintf(entryfile, "%s\t%s\n", entry[i], trans32(getlabeladdress(entry[i])));
+	}
+	fclose(entryfile);
+}
+
