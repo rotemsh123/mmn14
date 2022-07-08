@@ -69,5 +69,8 @@ int WORDtoInt(WORD w);
 char* trans32(int number);
 int intructionlinetype(char* curline, int index);
 int getlabeladdress(char* labelname);
+void inttoword(char* string, int linenumber, WORD* w, int dataordirect);
+
+
 
 #endif /* MMN14_H_ */

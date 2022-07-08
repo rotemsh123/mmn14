@@ -49,33 +49,25 @@ void getword(int codeType, int sourceaddresscode, int targetaddresscode, int ord
 
 }
 
-/*
- * this function initiallize the words when the argument is struct
- * first word is the struct adress
- * second word is the struct field number
- */
-void initializestructwords(char* arg, int linenumber){
-	/*struct with 2 words. first is the lable address and second is 1 or 2 (first field or second in the struct)*/
-	char* labelname = getcharstillchar(arg, 0, '.');
-	int lableadress = getlabeladdress(labelname);
-	WORD w;
+
+void initthefirst2digitinword(WORD *w, int linenumber, char* labelname){
 	int i;
 	int structexist=0;
 	/* put the A (00) R - in entry table (10) E - in external table (01) field ()*/
 	for (i=0;i<labelindex; i++){
-		printf("Label: '%s'\n",entry[i] );
+		/*printf("Label: '%s'\n",entry[i] );*/
 		if (strcmp(symboltable[i].name, labelname) == 0){
-			w.value[0] = 0;
-			w.value[1] = 1;
+			w[0].value[0] = 0;
+			w[0].value[1] = 1;
 			structexist = 1;
 			break;
 		}
 	}
 	for (i=0;i<externindex; i++){
-		printf("external: '%s'\n",external[i] );
+		/*printf("external: '%s'\n",external[i] );*/
 		if (strcmp(external[i], labelname) == 0){
-			w.value[0] = 1;
-			w.value[1] = 0;
+			w[0].value[0] = 1;
+			w[0].value[1] = 0;
 			structexist =1;
 			break;
 		}
@@ -83,9 +75,22 @@ void initializestructwords(char* arg, int linenumber){
 	/*meaning I couldnt find the struct in the file*/
 	if (structexist==0){
 		printf("ERROR in line %d: Illegal struct name: %s \n", linenumber, labelname);
-		w.value[0] = 0;
-		w.value[1] = 0;
+		w[0].value[0] = 0;
+		w[0].value[1] = 0;
 	}
+}
+/*
+ * this function initiallize the words when the argument is struct
+ * first word is the struct adress
+ * second word is the struct field number
+ */
+void initializestructwords(char* arg, int linenumber){
+	int i;
+	/*struct with 2 words. first is the lable address and second is 1 or 2 (first field or second in the struct)*/
+	char* labelname = getcharstillchar(arg, 0, '.');
+	int lableadress = getlabeladdress(labelname);
+	WORD w;
+	initthefirst2digitinword(&w, linenumber, labelname);
 
 	for (i=2; i<=9; i++){
 		w.value[i] = lableadress%2;
@@ -97,7 +102,6 @@ void initializestructwords(char* arg, int linenumber){
 	int index = indexof(".", arg, 0)+1;
 
 	char* structnumber = (char*) malloc(2);
-	strncpy(structnumber, &arg[index], 1);
 	structnumber[1]= '\0';
 
 
@@ -105,10 +109,10 @@ void initializestructwords(char* arg, int linenumber){
 	for (i=0; i<=9; i++){
 		w2.value[i]=0;
 	}
-	if (strcmp(structnumber , "1")==0){
+	if (strcmp(&arg[index] , "1")==0){
 		w2.value[2]=1;
 	}
-	else if (strcmp(structnumber , "2")==0 ){
+	else if (strcmp(&arg[index] , "2")==0 ){
 		w2.value[3]=1;
 	}
 	else{
@@ -120,20 +124,85 @@ void initializestructwords(char* arg, int linenumber){
 	IC++;
 }
 
+/*
+ * initialize the word when the argumrnt is direct number
+ */
+void initializesimmediateword(char* arg, int linenumber){
+	int index;
+	ignorewhitechar(arg, 0);
+	index = indexof("#", arg, 0)+1;
+	inttoword(&arg[index], linenumber, &memory[IC],0);
+	IC++;
+}
 
-void handleArg(char* arg, int linenumber){
+
+void initializesdirectword(char* labelname, int linenumber){
+	WORD w;
+	int j;
+	int lableadress = getlabeladdress(labelname);
+
+	for (j=0; j<=9; j++){
+		w.value[j] = 0;
+	}
+	initthefirst2digitinword(&w, linenumber, labelname);
+	j=2;
+	while (lableadress != 0) {
+		w.value[j] = lableadress % 2;
+		lableadress /= 2;
+		j++;
+	}
+	memory[IC] = w;
+	IC++;
+}
+
+/*
+ * if register in source, put it between 6-9
+ * if register is target - put it between 2-5
+ */
+void initializesregisterword(char* arg, int linenumber, WORD* w, int sourceortarget){
+	int d, i,j;
+
+	d = arg[1]-'0';
+	if (sourceortarget == 1){
+		for (i=0; i<=9; i++){
+			w[0].value[i] = 0;
+		}
+		j = 2; /* source register number should be between 6-9*/
+	}
+	else{
+		j = 6;
+	}
+	while (d != 0) {
+		w[0].value[j] = d % 2;
+		d /= 2;
+		j++;
+	}
+}
+
+/*
+ * 0 - immediate - start with #
+ * 1 - direct - name of label
+ * 2 - struct
+ * 3 - register
+ */
+
+void handleArg(char* arg, int linenumber, int sourceortarget){
 	int argaddresscode;
-	int numberofwords;
 	argaddresscode = getaddresscode(arg);
-	numberofwords = 0;
-	if ((argaddresscode == 2)){
+	if ((argaddresscode == 0)){
+		initializesimmediateword(arg, linenumber);
+	}
+	else if ((argaddresscode == 1)){
+		initializesdirectword(arg, linenumber);
+	}
+	else if ((argaddresscode == 2)){
 		initializestructwords(arg, linenumber);
 	}
-	/* if order address code is 0,1 or 3*/
-	else{
-		numberofwords++;
+	else if ((argaddresscode == 3)){
+		initializesregisterword(arg, linenumber, &memory[IC], sourceortarget);
+		IC++;
+
 	}
-	IC += numberofwords;
 
 }
 /*
@@ -162,7 +231,7 @@ void handle1param(int linenumber, char* curline, int ordercode, char* order, int
 	/*
 	 * add the arg to the memory
 	 * */
-	handleArg(arg1, linenumber);
+	handleArg(arg1, linenumber, 0);
 
 	printf("Word is %d-%d-%d-%d\n", ordercode, 0, arg1addresscode, 0);
 	printf("The word is: %s\n", WORDtostring(memory[IC]));
@@ -212,11 +281,15 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 	 * */
 	if ((arg1addresscode == 3) && (arg2addresscode == 3)){
 		/* if both registers - they will share 1 word*/
+		WORD w;
+		initializesregisterword(arg2, linenumber, &w, 1);
+		initializesregisterword(arg1, linenumber, &w, 0);
+		memory[IC] = w;
 		IC++;
 	}
 	else{
-		handleArg(arg1, linenumber);
-		handleArg(arg2, linenumber);
+		handleArg(arg1, linenumber, 0);
+		handleArg(arg2, linenumber, 1);
 	}
 
 }
@@ -224,8 +297,8 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 void handleorder(int linenumber, char* curline, int index){
 	char* order;
 	int ordercode;
-	printf("order line: %s", &(curline[index]));
 	index = ignorewhitechar(curline, index);
+	printf("order line: %s", &(curline[index]));
 	if (indexof(" ", curline, index)!=-1){
 		order = getcharstillchar(curline, index, ' ');
 	}
@@ -238,7 +311,8 @@ void handleorder(int linenumber, char* curline, int index){
 	/*order without params*/
 	if (ordercode >= 14){
 		printf("order (with no param) is %s code is: %d\n", order, ordercode);
-		getword(0, 0, 0, ordercode,&memory[IC]);
+		getword(0, 0, 0, ordercode, &memory[IC]);
+		IC++;
 		return;
 	}
 
@@ -356,8 +430,8 @@ void handle2paramLabel(int linenumber, char* curline, int ordercode, char* order
 void handleorderLabel(int linenumber, char* curline, int index){
 	char* order;
 	int ordercode;
-	printf("order line: %s", &(curline[index]));
 	index = ignorewhitechar(curline, index);
+	printf("order line: %s", &(curline[index]));
 	if (indexof(" ", curline, index)!=-1){
 		order = getcharstillchar(curline, index, ' ');
 	}

@@ -7,79 +7,6 @@
 
 #include "mmn14.h"
 
-int stringtoint(char *string, int linenumber) {
-	int result;
-	int puiss;
-	int index=0, length;
-	index=ignorewhitechar(string,index);
-
-	length = strlen(string);
-	result = 0;
-	puiss = 1;
-	while (('-' == string[index]) || (string[index] == '+')) {
-		if (string[index] == '-')
-			puiss = puiss * -1;
-		index++;
-	}
-	while (index<length) {
-		if ((string[index] >= '0') && (string[index] <= '9')){
-			result = (result * 10) + (string[index] - '0');
-			index++;
-		}
-		else{
-			printf("ERROR in line %d: Expecting number and got char: %c\n",linenumber, string[index]);
-			break;
-		}
-	}
-
-	return (result * puiss);
-}
-
-/**
- * convert int into word
- */
-void inttoword(char* string, int linenumber, WORD* w){
-	int d;
-	int negative=0, j;
-	negative = 0;
-	d = stringtoint(string, linenumber);
-
-	printf("char is: %s and int is: %d\n", string, d);
-	j = 0;
-
-	if (d<0){
-		d*=-1;
-		negative = 1;
-	}
-	while (d != 0) {
-		w[0].value[j] = d % 2;
-		d /= 2;
-		j++;
-	}
-	/*if number is negative, I switch each 0 to 1 and than add 1*/
-	if (negative == 1){
-		for (j=0; j<10; j++){
-			if(w[0].value[j] == 0){
-				w[0].value[j] = 1;
-			}
-			else {
-				w[0].value[j] = 0;
-			}
-		}
-		/*now should add 1*/
-		for (j=0; j<10; j++){
-			if(w[0].value[j] == 0){
-				w[0].value[j] = 1;
-				break;
-			}
-			else{
-				w[0].value[j] = 0;
-			}
-		}
-	}
-
-}
-
 
 
 void handledata(int linenumber, char* curline, int index) {
@@ -98,8 +25,8 @@ void handledata(int linenumber, char* curline, int index) {
 			lastarg = 1;
 		}
 
-		inttoword(string, linenumber,&datamemory[DC]);
-		printf("Word is: %s\n", WORDtostring(datamemory[DC]));
+		inttoword(string, linenumber,&datamemory[DC], 1);
+		printf("Word is: %s\n", WORDtostringwithminus(datamemory[DC]));
 
 		DC++;
 	}
@@ -165,8 +92,8 @@ void handlestruct(int linenumber, char* curline, int index) {
 	arg2 = getcharstillchar(curline, index, '\"');
 
 	/* First word is int to word*/
-	inttoword(arg1, linenumber, &datamemory[DC]);
-	printf("Word is: %s\n", WORDtostring(datamemory[DC]));
+	inttoword(arg1, linenumber, &datamemory[DC], 1);
+	printf("Word is: %s\n", WORDtostringwithminus(datamemory[DC]));
 	DC++;
 
 	/* Next words are the string*/
@@ -225,7 +152,7 @@ void handleInstructions(int linenumber, char* curline, int index) {
 	int instructiontype;
 	index = ignorewhitechar(curline, index);
 	instructiontype = intructionlinetype(curline, index);
-	printf("instruction line: %s", &(curline[index]));
+	printf("instruction line: %s\n", &(curline[index]));
 
 	if (instructiontype == 0) {
 		handledata(linenumber, curline, index);

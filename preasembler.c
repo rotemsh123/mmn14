@@ -60,7 +60,7 @@ char* preasembler(FILE* f) {
 	macronum = 0;
 
 
-	do {
+	while (1) {
 		ind = ignorewhitechar(curline,ind);
 		isMacro = ismacroline(curline);
 
@@ -92,11 +92,13 @@ char* preasembler(FILE* f) {
 			}
 			macronum++;
 		}
+		if (lastLine==1){
+			break;
+		}
 		curline = readline(f);
 
 		ind=0;
 	}
-	while (lastLine!=1);
 
 	/*Release all memory*/
 	free (curline);

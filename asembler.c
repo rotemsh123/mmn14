@@ -113,7 +113,7 @@ void runassembler(char* filename){
 	/*
 	 * round 1: build the symbol table
 	 */
-	do{
+	while(1){
 		if (isEmptyLineOrComment(curline)!=0){
 
 			int index = 0;
@@ -127,10 +127,13 @@ void runassembler(char* filename){
 				handleorderLabel(linenumber, curline, index);
 			}
 		}
+		if (lastLine==1){
+			break;
+		}
 		curline = readline(amfile);
 		linenumber++;
 	}
-	while (lastLine!=1);
+
 	fclose(amfile);
 
 	updatelabels();
@@ -148,7 +151,7 @@ void runassembler(char* filename){
 	initwords();
 	curline = readline(amfile);
 
-	do{
+	while (1){
 		if (isEmptyLineOrComment(curline)!=0){
 
 			int index = 0;
@@ -160,10 +163,13 @@ void runassembler(char* filename){
 				handleorder(linenumber, curline, index);
 			}
 		}
+		if (lastLine==1){
+			break;
+		}
 		curline = readline(amfile);
 		linenumber++;
 	}
-	while (lastLine!=1);
+
 	fclose(amfile);
 
 }

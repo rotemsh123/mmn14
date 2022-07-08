@@ -102,3 +102,85 @@ int getlabeladdress(char* labelname){
 	printf ("ERROR. label: '%s' doesn't exist\n", labelname);
 	return 0;
 }
+
+int stringtoint(char *string, int linenumber) {
+	int result;
+	int puiss;
+	int index=0, length;
+	index=ignorewhitechar(string,index);
+
+	length = strlen(string);
+	result = 0;
+	puiss = 1;
+	while (('-' == string[index]) || (string[index] == '+')) {
+		if (string[index] == '-')
+			puiss = puiss * -1;
+		index++;
+	}
+	while (index<length) {
+		if ((string[index] >= '0') && (string[index] <= '9')){
+			result = (result * 10) + (string[index] - '0');
+			index++;
+		}
+		else{
+			printf("ERROR in line %d: Expecting number and got char: %c\n",linenumber, string[index]);
+			break;
+		}
+	}
+
+	return (result * puiss);
+}
+
+/**
+ * convert int into word
+ * if dataordirect ==0  menaing it is a data line (first 2 digit are used)
+ * dataordirect !=0 meaning it is direct (first 2 digit should be 0)
+ */
+void inttoword(char* string, int linenumber, WORD* w, int dataordirect){
+	int d;
+	int negative=0, i=0, j=0, k=0;
+	negative = 0;
+	d = stringtoint(string, linenumber);
+
+	printf("char is: %s and int is: %d\n", string, d);
+
+	if (dataordirect == 0){
+		i = 2;
+		j = 2;
+		k = 2;
+		w[0].value[0] = 0;
+		w[0].value[1] = 0;
+	}
+
+	if (d<0){
+		d*=-1;
+		negative = 1;
+	}
+	while (d != 0) {
+		w[0].value[i] = d % 2;
+		d /= 2;
+		i++;
+	}
+	/*if number is negative, I switch each 0 to 1 and than add 1*/
+	if (negative == 1){
+		for (; j<10; j++){
+			if(w[0].value[j] == 0){
+				w[0].value[j] = 1;
+			}
+			else {
+				w[0].value[j] = 0;
+			}
+		}
+		/*now should add 1*/
+		for (; k<10; k++){
+			if(w[0].value[k] == 0){
+				w[0].value[k] = 1;
+				break;
+			}
+			else{
+				w[0].value[k] = 0;
+			}
+		}
+	}
+
+}
