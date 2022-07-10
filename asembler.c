@@ -241,7 +241,7 @@ void saveexternalfile(char* filename){
 
 	for (i=0; i<entryindex; i++){
 		for (j=0; j<external[i].numofaddresses; j++){
-			fprintf(externalfile, "%s\t%d\n", external[i].name, external[i].addresses[j]);
+			fprintf(externalfile, "%s\t%s\n", external[i].name, trans32(external[i].addresses[j]));
 		}
 	}
 	fclose(externalfile);
