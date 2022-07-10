@@ -111,11 +111,19 @@ void handleentry(int linenumber, char* curline, int index) {
 }
 void handleextern(int linenumber, char* curline, int index) {
 	char* externalchar;
+	int i;
 	index = index + 7;
 	index = ignorewhitechar(curline, index);
 	externalchar = getcharstillchar(curline, index, '\n');
 	printf("Extern: %s\n", externalchar);
-	external[externindex] = externalchar;
+	for (i=0; i<externindex; i++){
+		if (strcmp (external[i].name, externalchar) ==0){
+			printf("ERROR in line %d: external already exist: %s \n", linenumber, externalchar);
+			return;
+		}
+	}
+	external[externindex].name = (char*)malloc (30);
+	strcpy(external[externindex].name, externalchar);
 	externindex++;
 }
 

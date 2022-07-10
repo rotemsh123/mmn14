@@ -24,7 +24,14 @@ WORD memory[256];
 WORD datamemory[256];
 char* entry[100];
 int entryindex;
-char* external[100];
+typedef struct{
+	char* name;
+	int addresses [50];
+	int numofaddresses;
+}EXTERNAL;
+
+EXTERNAL external[100];
+
 int externindex;
 
 int IC;
@@ -38,6 +45,7 @@ int indexof (char* c, char* s, int start);
 void runassembler(char* filename);
 void saveobjectfile(char* filename);
 void saveentryfile(char* filename);
+void saveexternalfile(char* filename);
 
 int ordertrans(char* order);
 

@@ -65,7 +65,9 @@ void initthefirst2digitinword(WORD *w, int linenumber, char* labelname){
 	}
 	for (i=0;i<externindex; i++){
 		/*printf("external: '%s'\n",external[i] );*/
-		if (strcmp(external[i], labelname) == 0){
+		if (strcmp(external[i].name, labelname) == 0){
+			external[i].addresses[external[i].numofaddresses] = linenumber;
+			external[i].numofaddresses++;
 			w[0].value[0] = 1;
 			w[0].value[1] = 0;
 			structexist =1;

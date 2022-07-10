@@ -39,6 +39,7 @@ void handlefile(char* filename){
 
 	saveobjectfile(filename);
 	saveentryfile(filename);
+	saveexternalfile(filename);
 }
 
 int main(int argc, char **argv) {

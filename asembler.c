@@ -226,3 +226,24 @@ void saveentryfile(char* filename){
 	fclose(entryfile);
 }
 
+void saveexternalfile(char* filename){
+	char* externalfilename;
+	FILE* externalfile;
+	int i,j;
+	if (externindex==0){
+		/*no entry in the file so file will not be created*/
+		return;
+	}
+	externalfilename=(char*)malloc(80);
+	strcpy(externalfilename,filename);
+	strcat(externalfilename ,".ext");
+	externalfile = fopen (externalfilename, "w");
+
+	for (i=0; i<entryindex; i++){
+		for (j=0; j<external[i].numofaddresses; j++){
+			fprintf(externalfile, "%s\t%d\n", external[i].name, external[i].addresses[j]);
+		}
+	}
+	fclose(externalfile);
+}
+
