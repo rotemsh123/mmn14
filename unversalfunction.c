@@ -36,6 +36,12 @@ char* getcharstillchar(char* text, int start, char c){
 	char* line;
 	int i;
 	int end = indexof(&c, text, start);
+	if (end <0){
+		if (VERBOSS == 2){
+			printf ("char %c doesnt exist in text %s\n" , c, text);
+		}
+		return text;
+	}
 	int length= end-start;
 	line = (char*) malloc(length);
 	for (i=0;i<length; i++){
@@ -74,7 +80,9 @@ int indexof (char* c, char* line, int start){
 void printlabels(){
 	int i = 0;
 	for (i=0; i< labelindex; i++){
-		printf ("Label %s address %d\n" , symboltable[i].name, symboltable[i].value);
+		if (VERBOSS > 2){
+			printf ("Label %s address %d\n" , symboltable[i].name, symboltable[i].value);
+		}
 	}
 }
 void initwords(){
@@ -92,6 +100,9 @@ void initwords(){
 	}
 }
 
+/*
+ * this function scans the symbole table and return the index of the label name in argument
+ */
 int getlabeladdress(char* labelname){
 	int i;
 	for (i=0; i< labelindex; i++){
@@ -99,7 +110,9 @@ int getlabeladdress(char* labelname){
 			return (symboltable[i]).value;
 		}
 	}
-	printf ("ERROR. label: '%s' doesn't exist\n", labelname);
+	if (VERBOSS > 2){
+		printf ("label: '%s' doesn't exist as internal label, we will treat it as entern or external\n", labelname);
+	}
 	return 0;
 }
 
@@ -123,7 +136,9 @@ int stringtoint(char *string, int linenumber) {
 			index++;
 		}
 		else{
-			printf("ERROR in line %d: Expecting number and got char: %c\n",linenumber, string[index]);
+			if (VERBOSS > 0){
+				printf("ERROR in line %d: Expecting number and got char: %c\n",linenumber, string[index]);
+			}
 			break;
 		}
 	}
@@ -142,7 +157,9 @@ void inttoword(char* string, int linenumber, WORD* w, int dataordirect){
 	negative = 0;
 	d = stringtoint(string, linenumber);
 
-	printf("char is: %s and int is: %d\n", string, d);
+	if (VERBOSS > 2){
+		printf("char is: %s and int is: %d\n", string, d);
+	}
 
 	if (dataordirect == 0){
 		i = 2;

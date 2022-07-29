@@ -26,20 +26,26 @@ void handledata(int linenumber, char* curline, int index) {
 		}
 
 		inttoword(string, linenumber,&datamemory[DC], 1);
-		printf("Word is: %s\n", WORDtostringwithminus(datamemory[DC]));
+		if (VERBOSS > 2){
+			printf("Word is: %s\n", WORDtostringwithminus(datamemory[DC]));
+		}
 
 		DC++;
 	}
 }
 
+/*
+ * putstringindata takes string, split it into chars and put each char as a WORD in the data memory
+ */
 void putstringindata(char* string){
 	int i, j;
 	for (i = 0; i < strlen(string); i++) {
 
 		char c = string[i];
 		int d = (int) c;
-
-		printf("char %c is %d\n", c, d);
+		if (VERBOSS > 2){
+			printf("char %c is %d\n", c, d);
+		}
 		j = 0;
 
 		while (d > 0) {
@@ -47,7 +53,9 @@ void putstringindata(char* string){
 			d /= 2;
 			j++;
 		}
-		printf("Word is: %s\n", WORDtostring(datamemory[DC]));
+		if (VERBOSS > 2){
+			printf("Word is: %s\n", WORDtostring(datamemory[DC]));
+		}
 		DC++;
 
 	}
@@ -64,13 +72,16 @@ void handlestring(int linenumber, char* curline, int index) {
 	index = index + 7;
 	index = ignorewhitechar(curline, index);
 	if (indexof(",", curline, index) != -1) {
-		printf("ERROR in line %d: Illegal char in string (','): %s",linenumber, &(curline[index]));
+		if (VERBOSS > 0){
+			printf("ERROR in line %d: Illegal char in string (','): %s",linenumber, &(curline[index]));
+		}
 	}
 	index = indexof("\"", curline, index) + 1;
 	string = getcharstillchar(curline, index, '\"');
 	putstringindata(string);
-
-	printf("String: %s\n", string);
+	if (VERBOSS > 2){
+		printf("String: %s\n", string);
+	}
 }
 
 
@@ -81,7 +92,9 @@ void handlestruct(int linenumber, char* curline, int index) {
 	char* arg2;
 
 	if (indexof(",", curline, index) ==-1){
-		printf("ERROR in line %d: missing operands for struct: %s \n", linenumber, &(curline[index]));
+		if (VERBOSS > 0){
+			printf("ERROR in line %d: missing operands for struct: %s \n", linenumber, &(curline[index]));
+		}
 		return;
 	}
 	index=indexof(" ", curline, index)+1;
@@ -93,7 +106,9 @@ void handlestruct(int linenumber, char* curline, int index) {
 
 	/* First word is int to word*/
 	inttoword(arg1, linenumber, &datamemory[DC], 1);
-	printf("Word is: %s\n", WORDtostringwithminus(datamemory[DC]));
+	if (VERBOSS > 2){
+		printf("Word is: %s\n", WORDtostringwithminus(datamemory[DC]));
+	}
 	DC++;
 
 	/* Next words are the string*/
@@ -105,7 +120,9 @@ void handleentry(int linenumber, char* curline, int index) {
 	index = index + 6;
 	index = ignorewhitechar(curline, index);
 	entrychar = getcharstillchar(curline, index, '\n');
-	printf("Entry: %s\n", entrychar);
+	if (VERBOSS > 2){
+		printf("Entry: %s\n", entrychar);
+	}
 	entry[entryindex] = entrychar;
 	entryindex++;
 }
@@ -115,10 +132,14 @@ void handleextern(int linenumber, char* curline, int index) {
 	index = index + 7;
 	index = ignorewhitechar(curline, index);
 	externalchar = getcharstillchar(curline, index, '\n');
-	printf("Extern: %s\n", externalchar);
+	if (VERBOSS > 2){
+		printf("Extern: %s\n", externalchar);
+	}
 	for (i=0; i<externindex; i++){
 		if (strcmp (external[i].name, externalchar) ==0){
-			printf("ERROR in line %d: external already exist: %s \n", linenumber, externalchar);
+			if (VERBOSS > 0){
+				printf("ERROR in line %d: external already exist: %s \n", linenumber, externalchar);
+			}
 			return;
 		}
 	}
@@ -160,7 +181,9 @@ void handleInstructions(int linenumber, char* curline, int index) {
 	int instructiontype;
 	index = ignorewhitechar(curline, index);
 	instructiontype = intructionlinetype(curline, index);
-	printf("instruction line: %s\n", &(curline[index]));
+	if (VERBOSS > 2){
+		printf("instruction line: %s\n", &(curline[index]));
+	}
 
 	if (instructiontype == 0) {
 		handledata(linenumber, curline, index);
@@ -178,8 +201,10 @@ void handleInstructions(int linenumber, char* curline, int index) {
 		handleextern(linenumber, curline, index);
 	}
 	else {
-		printf("ERROR in line %d: Illegal instruction: %s", linenumber,
+		if (VERBOSS > 0){
+			printf("ERROR in line %d: Illegal instruction: %s", linenumber,
 				&(curline[index]));
+		}
 	}
 
 }

@@ -14,17 +14,19 @@ void handlefile(char* filename){
 
 	inputFile = fopen(inputfilename, "r");
 
-	if (inputFile == NULL || inputFile == NULL)
+	if (inputFile == NULL || inputFile == NULL)/*TODO*/
 	{
-	  printf("Error! Could not open file\n");
-	  exit(-1);
+		if (VERBOSS > 0){
+			printf("ERROR. Could not open file\n");
+		}
+		exit(-1);
 	}
 	text = preasembler(inputFile);
 	puts(text);
 
 	fclose(inputFile);
 
-	fileaftermacro=(char*)malloc(80);
+	fileaftermacro=(char*)malloc(800);
 	strcpy(fileaftermacro,filename);
 	strcat(fileaftermacro, ".am");
 	aftermacrofile = fopen (fileaftermacro, "w");
@@ -44,10 +46,12 @@ void handlefile(char* filename){
 
 int main(int argc, char **argv) {
 	int i;
-
+	VERBOSS = 2;
 	for (i=1; i<argc; i++){
 		char* filename = argv[i];
-		printf ("Handeling file: %s\n", filename);
+		if (VERBOSS > 2){
+			printf ("Handeling file: %s\n", filename);
+		}
 		handlefile(filename);
 	}
 

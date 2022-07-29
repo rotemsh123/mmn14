@@ -64,25 +64,33 @@ int handlelabel(int linenumber, char* curline, int index){
 
 	for (i=0; i< labelindex; i++){
 		if (strcmp(symboltable[i].name, label) == 0){
-			printf ("ERROR in line %d. label: %s already exist\n", linenumber, label);
+			if (VERBOSS > 0){
+				printf ("ERROR in line %d. label: %s already exist\n", linenumber, label);
+			}
 		}
 	}
 
 	/*Ignore label in .entry or .extern lines*/
 	instructiontype = intructionlinetype(curline, indexofdots+1);
 	if (instructiontype == 3){
-		printf ("WARNING in line %d. label: %s is ignored because it is in .entry line\n", linenumber, label);
+		if (VERBOSS > 1){
+			printf ("WARNING in line %d. label: %s is ignored because it is in .entry line\n", linenumber, label);
+		}
 		return indexofdots+1;
 	}
 	if (instructiontype == 4){
-		printf ("WARNING in line %d. label: %s is ignored because it is in .extern line\n", linenumber, label);
+		if (VERBOSS > 1){
+			printf ("WARNING in line %d. label: %s is ignored because it is in .extern line\n", linenumber, label);
+		}
 		return indexofdots+1;
 	}
 	islabelline =1;
 	symboltable[labelindex].name = (char*)malloc(30);
 	strcpy(symboltable[labelindex].name, label);
 
-	/*printf ("label: %s\n", label);*/
+	if (VERBOSS > 2){
+		printf ("label: %s\n", label);
+	}
 	return indexofdots+1;
 }
 
@@ -142,7 +150,9 @@ void runassembler(char* filename){
 	/*
 	 * round 2: build the rest
 	 */
-	printf ("\n\n*** Starting round 2 ***\n");
+	if (VERBOSS > 2){
+		printf ("\n\n*** Starting round 2 ***\n");
+	}
 	IC = 100;
 	DC = 0;
 	amfile = fopen (filename, "r");
@@ -191,16 +201,22 @@ void saveobjectfile(char* filename){
 		char* string = WORDtostringwithminus(w);
 		int wint = WORDtoInt(w);
 		char* i32 = trans32(wint);
-		printf("Address: %d (%s), value %s (int %d,  32: %s)\n", i, trans32(i), string, wint, i32);
+		if (VERBOSS > 2){
+			printf("Address: %d (%s), value %s (int %d,  32: %s)\n", i, trans32(i), string, wint, i32);
+		}
 		fprintf(objectfile, "%s\t%s\n", trans32(i), i32);
 	}
-	printf("Starting Data\n");
+	if (VERBOSS > 2){
+		printf("Starting Data\n");
+	}
 	for (i=0; i<DC; i++){
 		WORD w = datamemory[i];
 		char* string = WORDtostringwithminus(w);
 		int wint = WORDtoInt(w);
 		char* i32 = trans32(wint);
-		printf("Address: %d (%s), value %s (int %d,  32: %s)\n", i+IC, trans32(i+IC), string, wint, i32);
+		if (VERBOSS > 2){
+			printf("Address: %d (%s), value %s (int %d,  32: %s)\n", i+IC, trans32(i+IC), string, wint, i32);
+		}
 		fprintf(objectfile, "%s\t%s\n", trans32(i+IC), i32);
 	}
 	fclose(objectfile);

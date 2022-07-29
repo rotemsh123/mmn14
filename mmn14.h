@@ -36,6 +36,10 @@ int externindex;
 
 int IC;
 int DC;
+/*
+ * verbos is log level. 0 is quite, 1 is error, 2 is warning, 3 is all
+ */
+int VERBOSS;
 int islabelline;
 char* readline();
 char* preasembler(FILE* f);

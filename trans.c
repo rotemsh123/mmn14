@@ -2,7 +2,9 @@
 int power(int a,int b);
 char base32[32] = {'!','@','#','$','%','^','&','*','<','>','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v'};
 char* opcode[16] = {"mov","cmp", "add", "sub","not", "clr", "lea", "inc", "dec", "jmp", "bne", "get", "prn", "jsr", "rts", "hlt"};
-
+/*
+ * translate from decimaly base to 32 base
+ */
 char* trans32(int number){
 	char* final;
 	int i;
@@ -14,7 +16,9 @@ char* trans32(int number){
 	final[2] = '\0';
 	return final;
 }
-
+/*
+ * translate word(10 digits binary number) to int
+ */
 int WORDtoInt(WORD w){
 	int i;
 	int number=0;
@@ -23,7 +27,9 @@ int WORDtoInt(WORD w){
 	}
 	return number;
 }
-
+/*
+ * return the representation of the gien order
+ */
 int ordertrans(char* order){
 	int i = 0;
 	for (i=0; i< 16; i++){
@@ -34,7 +40,9 @@ int ordertrans(char* order){
 	}
 	return -1;
 }
-
+/*
+ * returns a to the power of b
+ */
 int power(int a,int b){
 	int i;
 	if(b==0){
@@ -48,7 +56,9 @@ int power(int a,int b){
 	}
 	return a;
 }
-
+/*
+ * transform WORD to array of chars
+ */
 char* WORDtostring(WORD word){
 	char* wordinstring;
 	int i=0;
@@ -60,7 +70,9 @@ char* WORDtostring(WORD word){
 	return wordinstring;
 }
 
-
+/*
+ * transform WORD to array of chars whith minus
+ */
 char* WORDtostringwithminus(WORD word){
 	char* wordinstring;
 	int i;
