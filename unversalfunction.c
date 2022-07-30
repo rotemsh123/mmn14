@@ -8,6 +8,9 @@ int ignorewhitechar(char* line,int ind) {
 	return ind;
 }
 
+/*
+ * this function read line for a file
+ */
 char* readline(FILE* f) {
 	char* line;
 	int i=0;
@@ -32,6 +35,9 @@ char* readline(FILE* f) {
 
 }
 
+/*
+ * this function gets a char, scan text and return the text till the first appearance of this char
+ */
 char* getcharstillchar(char* text, int start, char c){
 	char* line;
 	int i;
@@ -52,6 +58,7 @@ char* getcharstillchar(char* text, int start, char c){
 	return line;
 }
 
+
 int compareignore(char* s1, char* s2){
 
 	char s1c;
@@ -68,6 +75,9 @@ int compareignore(char* s1, char* s2){
 	  return 0;
 }
 
+/*
+ * this function return the index of chanr is a text starting from the index provided
+ */
 int indexof (char* c, char* line, int start){
 	for (;start<strlen(line); start++){
 		if (strncmp(&(line[start]), c, 1)==0){
@@ -77,6 +87,7 @@ int indexof (char* c, char* line, int start){
 	return -1;
 }
 
+
 void printlabels(){
 	int i = 0;
 	for (i=0; i< labelindex; i++){
@@ -85,6 +96,10 @@ void printlabels(){
 		}
 	}
 }
+
+/*
+ * this function initialize all 256 words in the memory and 256 words in data memory with zeros
+ */
 void initwords(){
 	int i,j;
 	for (j=0; j< 256; j++){
@@ -116,6 +131,9 @@ int getlabeladdress(char* labelname){
 	return 0;
 }
 
+/*
+ * this function stranslate number which appear as string to int
+ */
 int stringtoint(char *string, int linenumber) {
 	int result;
 	int puiss;

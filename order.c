@@ -49,11 +49,15 @@ void getword(int codeType, int sourceaddresscode, int targetaddresscode, int ord
 
 }
 
-
+/*
+ * this function initialize the first 2 digit in a word
+ * if the lable exists in the same file - those 2 digit will be 00 and represent A
+ * if the lable exists in the entry list - those 2 digit will be 10 and represent R
+ * if the lable exists in the external list - those 2 digit will be 01 and represent E
+ */
 void initthefirst2digitinword(WORD *w, int linenumber, char* labelname){
 	int i;
 	int structexist=0;
-	/* put the A (00) R - in entry table (10) E - in external table (01) field ()*/
 	for (i=0;i<labelindex; i++){
 		if (VERBOSS > 2){
 			printf("Label: '%s'\n",entry[i] );
@@ -66,9 +70,6 @@ void initthefirst2digitinword(WORD *w, int linenumber, char* labelname){
 		}
 	}
 	for (i=0;i<externindex; i++){
-		if (VERBOSS > 2){
-			printf("external: '%s'\n",external[i] );
-		}
 		if (strcmp((external[i].name), labelname) == 0){
 			external[i].addresses[external[i].numofaddresses] = IC;
 			external[i].numofaddresses++;
@@ -145,7 +146,9 @@ void initializesimmediateword(char* arg, int linenumber){
 	IC++;
 }
 
-
+/*
+ * initialize a WORD when the value is direct - name of a label
+ */
 void initializesdirectword(char* labelname, int linenumber){
 	WORD w;
 	int j;
@@ -166,7 +169,7 @@ void initializesdirectword(char* labelname, int linenumber){
 }
 
 /*
- * initia;ize the word with the register number
+ * initiaize the word with the register number
  * if register in source, put it in the ints between 6-9
  * if register is target - put it in the ints between 2-5
  */
@@ -329,6 +332,9 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 
 }
 
+/*
+ * this function handle a line when the line contain order
+ */
 void handleorder(int linenumber, char* curline, int index){
 	char* order;
 	int ordercode;
@@ -389,6 +395,10 @@ void handleorder(int linenumber, char* curline, int index){
  *
  */
 
+
+/*
+ * This function is for round 1 of the assembler - calculate the number of WORD needed for 1 param order
+ */
 void handle1paramLabel(int linenumber, char* curline, int ordercode, char* order, int index){
 	char* arg1;
 	int arg1addresscode;
@@ -420,6 +430,9 @@ void handle1paramLabel(int linenumber, char* curline, int ordercode, char* order
 
 }
 
+/*
+ * This function is for round 1 of the assembler - calculate the number of WORD needed for 2 params order
+ */
 
 void handle2paramLabel(int linenumber, char* curline, int ordercode, char* order, int index){
 	char* arg1;
@@ -469,6 +482,9 @@ void handle2paramLabel(int linenumber, char* curline, int ordercode, char* order
 
 }
 
+/*
+ * This function is for round 1 of the assembler
+ */
 void handleorderLabel(int linenumber, char* curline, int index){
 	char* order;
 	int ordercode;

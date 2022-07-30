@@ -24,7 +24,9 @@ void macroname(char* line,int i) {
 	}
 }
 
-
+/*
+ * this function check if this line is a macro line. if it start with the word "macro" it return 0. 1 if not
+ */
 int ismacroline(char* line) {
 	if (strncmp(&line[ind], "macro", 5) == 0) {
 		return 0;
@@ -34,10 +36,16 @@ int ismacroline(char* line) {
 	}
 }
 
+
 void copyText(char* line, char* file) {
 	strcat(file, line);
 }
 
+/*
+ * this function gets file and run the preasembler:
+ * each macro definition is saved in macro table and then,
+ * in any usage of this macro - it copies the text to replace the macro name
+ */
 char* preasembler(FILE* f) {
 	char* curline;
 	MACRO inmacro[10];

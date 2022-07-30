@@ -3,6 +3,10 @@ REGISTER r0, r1, r2, r3, r4, r5, r6, r7, PSW;
 FILE* inputFile;
 FILE* aftermacrofile;
 
+/*
+ * This function handle 1 file of .as.
+ * run the preassembler for the macros and then run the 2 rounds of the assembler to create all the needed output files
+ */
 void handlefile(char* filename){
 	char* text;
 	char* inputfilename;
@@ -14,7 +18,7 @@ void handlefile(char* filename){
 
 	inputFile = fopen(inputfilename, "r");
 
-	if (inputFile == NULL || inputFile == NULL)/*TODO*/
+	if (inputFile == NULL || inputFile == NULL)
 	{
 		if (VERBOSS > 0){
 			printf("ERROR. Could not open file\n");
@@ -44,6 +48,10 @@ void handlefile(char* filename){
 	saveexternalfile(filename);
 }
 
+/*
+ * main function of the program
+ * it gets list of file names and handle each one of them
+ */
 int main(int argc, char **argv) {
 	int i;
 	VERBOSS = 2;

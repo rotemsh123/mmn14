@@ -223,6 +223,10 @@ void saveobjectfile(char* filename){
 
 }
 
+/*
+ * this function create the .ent file and write all the entry lables addresses there.
+ * if no entry exists - file will not be created.
+ */
 void saveentryfile(char* filename){
 	char* entryfilename;
 	FILE* entryfile;
@@ -242,12 +246,17 @@ void saveentryfile(char* filename){
 	fclose(entryfile);
 }
 
+/*
+ * this function create the .ext file and write all the external lables and the adresses where they are used.
+ * if no external exists - file will not be created.
+ */
+
 void saveexternalfile(char* filename){
 	char* externalfilename;
 	FILE* externalfile;
 	int i,j;
 	if (externindex==0){
-		/*no entry in the file so file will not be created*/
+		/*no externals in the file so file will not be created*/
 		return;
 	}
 	externalfilename=(char*)malloc(80);

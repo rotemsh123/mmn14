@@ -86,7 +86,9 @@ void handlestring(int linenumber, char* curline, int index) {
 
 
 
-
+/*
+ * handle struct. where first argument is int and second is string
+ */
 void handlestruct(int linenumber, char* curline, int index) {
 	char* arg1;
 	char* arg2;
@@ -115,6 +117,11 @@ void handlestruct(int linenumber, char* curline, int index) {
 	putstringindata(arg2);
 
 }
+
+/*
+ * handle line when it is entry
+ * this function takes the argument after the .entry and puts it in the entry table for future usage
+ */
 void handleentry(int linenumber, char* curline, int index) {
 	char* entrychar;
 	index = index + 6;
@@ -126,6 +133,12 @@ void handleentry(int linenumber, char* curline, int index) {
 	entry[entryindex] = entrychar;
 	entryindex++;
 }
+
+/*
+ * handle line when it is external
+ * this function takes the argument after the .external and puts it in the external structure for future usage
+ * the reason to use struct is because for each usage of the external lable, we should keep the adress where it is used
+ */
 void handleextern(int linenumber, char* curline, int index) {
 	char* externalchar;
 	int i;
@@ -177,6 +190,9 @@ int intructionlinetype(char* curline, int index){
 
 }
 
+/*
+ * This function is handeling line when it contains instruction
+ */
 void handleInstructions(int linenumber, char* curline, int index) {
 	int instructiontype;
 	index = ignorewhitechar(curline, index);
@@ -217,6 +233,10 @@ void handleInstructions(int linenumber, char* curline, int index) {
 
 
 
+/*
+ * This function is used for round 1 and counting the number of words needed for data.
+ * for each argument in the data line it adds 1 WORD
+ */
 void handledataLabel(int linenumber, char* curline, int index) {
 	int lastarg = 0;
 	index = index + 5;
@@ -233,6 +253,10 @@ void handledataLabel(int linenumber, char* curline, int index) {
 	}
 }
 
+/*
+ * This function is used for round 1 and counting the number of words needed for string.
+ * for each char in the string it adds 1 WORD
+ */
 void handlestringLabel(int linenumber, char* curline, int index) {
 	char* string;
 	int i;
@@ -245,10 +269,20 @@ void handlestringLabel(int linenumber, char* curline, int index) {
 	}
 }
 
+/*
+ * This function is used for round 1 and counting the number of words needed for struct.
+ * for the first int it allocate 1 WORD
+ * and for each char in the string it adds 1 WORD
+ */
+
 void handlestructLabel(int linenumber, char* curline, int index) {
 	DC++;
 	handlestringLabel (linenumber, curline, index);
 }
+
+/*
+ * This function is used for round 1 and counting the number of words needed for the instruction line.
+ */
 
 void handleInstructionsLabel(int linenumber, char* curline, int index) {
 	int instructiontype;
