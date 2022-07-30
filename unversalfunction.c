@@ -40,6 +40,7 @@ char* readline(FILE* f) {
  */
 char* getcharstillchar(char* text, int start, char c){
 	char* line;
+	int length;
 	int i;
 	int end = indexof(&c, text, start);
 	if (end <0){
@@ -48,7 +49,7 @@ char* getcharstillchar(char* text, int start, char c){
 		}
 		return text;
 	}
-	int length= end-start;
+	length= end-start;
 	line = (char*) malloc(length);
 	for (i=0;i<length; i++){
 		strncpy(&(line[i]), &(text[i+start]), 1);

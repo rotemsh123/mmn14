@@ -95,10 +95,14 @@ void initthefirst2digitinword(WORD *w, int linenumber, char* labelname){
  */
 void initializestructwords(char* arg, int linenumber){
 	int i;
+	int index;
+	char* structnumber;
+	WORD w, w2;
+
 	/*struct with 2 words. first is the lable address and second is 1 or 2 (first field or second in the struct)*/
 	char* labelname = getcharstillchar(arg, 0, '.');
 	int lableadress = getlabeladdress(labelname);
-	WORD w;
+
 	initthefirst2digitinword(&w, linenumber, labelname);
 
 	for (i=2; i<=9; i++){
@@ -108,13 +112,11 @@ void initializestructwords(char* arg, int linenumber){
 	memory[IC] = w;
 	IC++;
 
-	int index = indexof(".", arg, 0)+1;
+	index = indexof(".", arg, 0)+1;
 
-	char* structnumber = (char*) malloc(2);
+	structnumber = (char*) malloc(2);
 	structnumber[1]= '\0';
 
-
-	WORD w2;
 	for (i=0; i<=9; i++){
 		w2.value[i]=0;
 	}
