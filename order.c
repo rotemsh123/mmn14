@@ -84,6 +84,7 @@ void initthefirst2digitinword(WORD *w, int linenumber, char* labelname){
 		if (VERBOSS > 0){
 			printf("ERROR in line %d: Illegal struct name: %s \n", linenumber, labelname);
 		}
+		ERROR = 1;
 		w[0].value[0] = 0;
 		w[0].value[1] = 0;
 	}
@@ -130,6 +131,7 @@ void initializestructwords(char* arg, int linenumber){
 		if (VERBOSS > 0){
 			printf("ERROR in line %d: Illegal struct field (must be 1 or 2): %s \n", linenumber, labelname);
 		}
+		ERROR = 1;
 	}
 
 
@@ -241,6 +243,7 @@ void handle1param(int linenumber, char* curline, int ordercode, char* order, int
 		if (VERBOSS > 0){
 			printf("ERROR in line %d: Too many operands for order: %s \n", linenumber, order);
 		}
+		ERROR = 1;
 		return;
 	}
 	arg1 = getcharstillchar(curline, index, '\n');
@@ -249,6 +252,7 @@ void handle1param(int linenumber, char* curline, int ordercode, char* order, int
 		if (VERBOSS > 0){
 			printf("ERROR in line %d: order %s doesn't support direct address code for the target \n", linenumber, order);
 		}
+		ERROR = 1;
 	}
 
 	getword(0, 0, arg1addresscode, ordercode, &memory[IC]);
@@ -287,6 +291,7 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 		if (VERBOSS > 0){
 			printf("ERROR in line %d: missing operands for order: %s \n", linenumber, order);
 		}
+		ERROR = 1;
 		return;
 	}
 	arg1 = getcharstillchar(curline, index, ',');
@@ -305,6 +310,7 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 		if (VERBOSS > 0){
 			printf("ERROR in line %d: order %s doesn't support direct address code for the target \n", linenumber, order);
 		}
+		ERROR = 1;
 	}
 	getword(0, arg1addresscode, arg2addresscode, ordercode, &memory[IC]);
 
@@ -370,6 +376,7 @@ void handleorder(int linenumber, char* curline, int index){
 		if (VERBOSS > 0){
 			printf("ERROR in line %d: missing first operand for order: %s \n", linenumber, order);
 		}
+		ERROR = 1;
 		return;
 	}
 
@@ -389,6 +396,7 @@ void handleorder(int linenumber, char* curline, int index){
 	if (VERBOSS > 0){
 		printf("ERROR in line %d: Illegal order: %s \n", linenumber, order);
 	}
+	ERROR = 1;
 
 }
 

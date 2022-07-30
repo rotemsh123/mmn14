@@ -43,9 +43,11 @@ void handlefile(char* filename){
 	/*free (text);*/
 	free (fileaftermacro);
 
-	saveobjectfile(filename);
-	saveentryfile(filename);
-	saveexternalfile(filename);
+	if (ERROR == 0){
+		saveobjectfile(filename);
+		saveentryfile(filename);
+		saveexternalfile(filename);
+	}
 }
 
 /*
@@ -55,6 +57,7 @@ void handlefile(char* filename){
 int main(int argc, char **argv) {
 	int i;
 	VERBOSS = 2;
+	ERROR=0;
 	for (i=1; i<argc; i++){
 		char* filename = argv[i];
 		if (VERBOSS > 2){

@@ -75,6 +75,7 @@ void handlestring(int linenumber, char* curline, int index) {
 		if (VERBOSS > 0){
 			printf("ERROR in line %d: Illegal char in string (','): %s",linenumber, &(curline[index]));
 		}
+		ERROR = 1;
 	}
 	index = indexof("\"", curline, index) + 1;
 	string = getcharstillchar(curline, index, '\"');
@@ -97,6 +98,7 @@ void handlestruct(int linenumber, char* curline, int index) {
 		if (VERBOSS > 0){
 			printf("ERROR in line %d: missing operands for struct: %s \n", linenumber, &(curline[index]));
 		}
+		ERROR = 1;
 		return;
 	}
 	index=indexof(" ", curline, index)+1;
@@ -153,6 +155,7 @@ void handleextern(int linenumber, char* curline, int index) {
 			if (VERBOSS > 0){
 				printf("ERROR in line %d: external already exist: %s \n", linenumber, externalchar);
 			}
+			ERROR = 1;
 			return;
 		}
 	}
@@ -221,6 +224,7 @@ void handleInstructions(int linenumber, char* curline, int index) {
 			printf("ERROR in line %d: Illegal instruction: %s", linenumber,
 				&(curline[index]));
 		}
+		ERROR = 1;
 	}
 
 }

@@ -158,6 +158,7 @@ int stringtoint(char *string, int linenumber) {
 			if (VERBOSS > 0){
 				printf("ERROR in line %d: Expecting number and got char: %c\n",linenumber, string[index]);
 			}
+			ERROR = 1;
 			break;
 		}
 	}

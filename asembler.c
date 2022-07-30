@@ -66,6 +66,7 @@ int handlelabel(int linenumber, char* curline, int index){
 		if (strcmp(symboltable[i].name, label) == 0){
 			if (VERBOSS > 0){
 				printf ("ERROR in line %d. label: %s already exist\n", linenumber, label);
+				ERROR = 1;
 			}
 		}
 	}
