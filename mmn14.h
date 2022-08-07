@@ -36,6 +36,8 @@ int externindex;
 
 int IC;
 int DC;
+
+int ERROR;
 /*
  * verbos is log level. 0 is quite, 1 is error, 2 is warning, 3 is all
  */
@@ -46,6 +48,7 @@ char* preasembler(FILE* f);
 int ignorewhitechar(char* line,int ind);
 int compareignore(char* s1, char* s2);
 int indexof (char* c, char* s, int start);
+int hassomethingtillendofline(char* line, int start);
 void runassembler(char* filename);
 void saveobjectfile(char* filename);
 void saveentryfile(char* filename);

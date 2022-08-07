@@ -69,6 +69,7 @@ void putstringindata(char* string){
 
 void handlestring(int linenumber, char* curline, int index) {
 	char* string;
+	int index2;
 	index = index + 7;
 	index = ignorewhitechar(curline, index);
 	if (indexof(",", curline, index) != -1) {
@@ -78,10 +79,29 @@ void handlestring(int linenumber, char* curline, int index) {
 		ERROR = 1;
 	}
 	index = indexof("\"", curline, index) + 1;
+	index2 = indexof("\"", curline, index);
+	if(index2 == -1){
+		if (VERBOSS > 0){
+			printf("ERROR in line %d: String must have \" at the end\n",linenumber);
+		}
+		ERROR = 1;
+	}
+
 	string = getcharstillchar(curline, index, '\"');
 	putstringindata(string);
 	if (VERBOSS > 2){
 		printf("String: %s\n", string);
+	}
+
+	/*
+	 * check that after the string there is nothing else in the line
+	 */
+
+	if(hassomethingtillendofline(curline, index2) != 0){
+		if (VERBOSS > 0){
+			printf("ERROR in line %d: Should not have any chars after string: %s\n",linenumber, string);
+		}
+		ERROR = 1;
 	}
 }
 
@@ -96,7 +116,7 @@ void handlestruct(int linenumber, char* curline, int index) {
 
 	if (indexof(",", curline, index) ==-1){
 		if (VERBOSS > 0){
-			printf("ERROR in line %d: missing operands for struct: %s \n", linenumber, &(curline[index]));
+			printf("ERROR in line %d: Missing operands for struct: %s \n", linenumber, &(curline[index]));
 		}
 		ERROR = 1;
 		return;
@@ -105,8 +125,15 @@ void handlestruct(int linenumber, char* curline, int index) {
 	ignorewhitechar(curline, index);
 	arg1 = getcharstillchar(curline, index, ',');
 	index = indexof(",", curline, index) +1;
-	index = indexof("\"", curline, index) + 1;
-	arg2 = getcharstillchar(curline, index, '\"');
+	index = indexof("\"", curline, index);
+	if (index ==-1){
+		if (VERBOSS > 0){
+			printf("ERROR in line %d: Missing string operands for struct \n", linenumber);
+		}
+		ERROR = 1;
+		return;
+	}
+	arg2 = getcharstillchar(curline, index+1, '\"');
 
 	/* First word is int to word*/
 	inttoword(arg1, linenumber, &datamemory[DC], 1);
@@ -153,7 +180,7 @@ void handleextern(int linenumber, char* curline, int index) {
 	for (i=0; i<externindex; i++){
 		if (strcmp (external[i].name, externalchar) ==0){
 			if (VERBOSS > 0){
-				printf("ERROR in line %d: external already exist: %s \n", linenumber, externalchar);
+				printf("ERROR in line %d: External already exist: %s \n", linenumber, externalchar);
 			}
 			ERROR = 1;
 			return;

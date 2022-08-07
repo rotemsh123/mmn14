@@ -44,7 +44,7 @@ char* getcharstillchar(char* text, int start, char c){
 	int i;
 	int end = indexof(&c, text, start);
 	if (end <0){
-		if (VERBOSS == 2){
+		if (VERBOSS > 2){
 			printf ("char %c doesnt exist in text %s\n" , c, text);
 		}
 		return text;
@@ -88,6 +88,23 @@ int indexof (char* c, char* line, int start){
 	return -1;
 }
 
+/*
+ * This function checks if there is something in the line after space
+ */
+int hassomethingtillendofline(char* line, int start){
+	int index;
+	index = indexof(" ", line, start);
+	if (index == -1){
+		return 0;
+	}
+	index = ignorewhitechar(line, index);
+	if(line[index]=='\n'){
+		return 0;
+	}
+	return 1;
+
+}
+
 
 void printlabels(){
 	int i = 0;
@@ -127,7 +144,7 @@ int getlabeladdress(char* labelname){
 		}
 	}
 	if (VERBOSS > 2){
-		printf ("label: '%s' doesn't exist as internal label, we will treat it as entern or external\n", labelname);
+		printf ("Label: '%s' doesn't exist as internal label, we will treat it as entern or external\n", labelname);
 	}
 	return 0;
 }

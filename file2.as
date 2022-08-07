@@ -3,15 +3,18 @@ MAIN: .entry LOOP
 .extern L3
 .extern W
 MAIN: mov S1.1, W
-add r2,STR
-LOOP: jmp W
+adr r2,STR
+LOOP: jmp W,,,,
 prn #-5
-sub r1, r4
+sub r1, r4    
 inc #r
-mov S1.2, r3
+mov S1.2, #3
 bne L3
-END: hlt
-STR: .string "abcdef"
+LOOP: hlt
+.extern L3
+STR: .string "abcdef" "ggg"
+STR2: .string "abcdef
 LENGTH: .data 6,-9,15
 K: .data 22
-S1: .struct 8, "ab"
+S1: .struct 8, 7
+S2: .struct

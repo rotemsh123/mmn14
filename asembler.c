@@ -65,7 +65,7 @@ int handlelabel(int linenumber, char* curline, int index){
 	for (i=0; i< labelindex; i++){
 		if (strcmp(symboltable[i].name, label) == 0){
 			if (VERBOSS > 0){
-				printf ("ERROR in line %d. label: %s already exist\n", linenumber, label);
+				printf ("ERROR in line %d. Label: %s already exists\n", linenumber, label);
 				ERROR = 1;
 			}
 		}
@@ -75,13 +75,13 @@ int handlelabel(int linenumber, char* curline, int index){
 	instructiontype = intructionlinetype(curline, indexofdots+1);
 	if (instructiontype == 3){
 		if (VERBOSS > 1){
-			printf ("WARNING in line %d. label: %s is ignored because it is in .entry line\n", linenumber, label);
+			printf ("WARNING in line %d. Label: %s is ignored because it is in .entry line\n", linenumber, label);
 		}
 		return indexofdots+1;
 	}
 	if (instructiontype == 4){
 		if (VERBOSS > 1){
-			printf ("WARNING in line %d. label: %s is ignored because it is in .extern line\n", linenumber, label);
+			printf ("WARNING in line %d. Label: %s is ignored because it is in .extern line\n", linenumber, label);
 		}
 		return indexofdots+1;
 	}

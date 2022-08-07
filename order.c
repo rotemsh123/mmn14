@@ -239,7 +239,7 @@ void handle1param(int linenumber, char* curline, int ordercode, char* order, int
 	/*
 	 * only prn - (opcode 12) can has target address code =0
 	 */
-	if (indexof(",", curline, index) !=-1){
+	if ((indexof(",", curline, index) !=-1) || (hassomethingtillendofline(curline, index) != 0)){
 		if (VERBOSS > 0){
 			printf("ERROR in line %d: Too many operands for order: %s \n", linenumber, order);
 		}
@@ -250,7 +250,7 @@ void handle1param(int linenumber, char* curline, int ordercode, char* order, int
 	arg1addresscode = getaddresscode(arg1);
 	if ((arg1addresscode==0) && (ordercode!=12) ){
 		if (VERBOSS > 0){
-			printf("ERROR in line %d: order %s doesn't support direct address code for the target \n", linenumber, order);
+			printf("ERROR in line %d: Order %s doesn't support direct address code for the target \n", linenumber, order);
 		}
 		ERROR = 1;
 	}
@@ -299,6 +299,14 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 	index = ignorewhitechar(curline, index);
 	arg2 = getcharstillchar(curline, index, '\n');
 
+	if ((indexof(",", arg2, 0) !=-1)){
+		if (VERBOSS > 0){
+			printf("ERROR in line %d: Too many operands for order: %s \n", linenumber, order);
+		}
+		ERROR = 1;
+		return;
+	}
+
 	arg1addresscode = getaddresscode(arg1);
 	arg2addresscode = getaddresscode(arg2);
 
@@ -308,7 +316,7 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 	 */
 	if ((arg1addresscode==0) && (ordercode!=1) ){
 		if (VERBOSS > 0){
-			printf("ERROR in line %d: order %s doesn't support direct address code for the target \n", linenumber, order);
+			printf("ERROR in line %d: Order %s doesn't support direct address code for the target \n", linenumber, order);
 		}
 		ERROR = 1;
 	}
@@ -358,6 +366,13 @@ void handleorder(int linenumber, char* curline, int index){
 	}
 
 	ordercode = ordertrans(order);
+	if (ordercode == -1){
+		if (VERBOSS > 0){
+			printf("ERROR in line %d: Order %s is not supported \n", linenumber, order);
+		}
+		ERROR = 1;
+		return;
+	}
 
 	/*order without params*/
 	if (ordercode >= 14){
