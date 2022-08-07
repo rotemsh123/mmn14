@@ -97,7 +97,6 @@ void initthefirst2digitinword(WORD *w, int linenumber, char* labelname){
 void initializestructwords(char* arg, int linenumber){
 	int i;
 	int index;
-	char* structnumber;
 	WORD w, w2;
 
 	/*struct with 2 words. first is the lable address and second is 1 or 2 (first field or second in the struct)*/
@@ -114,9 +113,6 @@ void initializestructwords(char* arg, int linenumber){
 	IC++;
 
 	index = indexof(".", arg, 0)+1;
-
-	structnumber = (char*) malloc(2);
-	structnumber[1]= '\0';
 
 	for (i=0; i<=9; i++){
 		w2.value[i]=0;
@@ -263,9 +259,15 @@ void handle1param(int linenumber, char* curline, int ordercode, char* order, int
 	handleArg(arg1, linenumber, 0);
 
 	if (VERBOSS > 2){
+		char* wts;
+		char* wtsw;
 		printf("Word is %d-%d-%d-%d\n", ordercode, 0, arg1addresscode, 0);
-		printf("The word is: %s\n", WORDtostring(memory[IC]));
-		printf("The word with minus is: %s\n", WORDtostringwithminus(memory[IC]));
+		wts = WORDtostring(memory[IC]);
+		printf("The word is: %s\n", wts);
+		wtsw = WORDtostringwithminus(memory[IC]);
+		printf("The word with minus is: %s\n", wtsw);
+		free (wts);
+		free (wtsw);
 	}
 
 

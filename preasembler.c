@@ -36,9 +36,16 @@ int ismacroline(char* line) {
 	}
 }
 
-
-void copyText(char* line, char* file) {
-	strcat(file, line);
+/*
+ * copy the next line to file. if this si the first line, ignore whatever already in the file
+ */
+void copyText(char* line, char* file, int firstline) {
+	if (firstline == 0){
+		strcat(file, line);
+	}
+	else{
+		strcpy(file, line);
+	}
 }
 
 /*
@@ -52,6 +59,7 @@ char* preasembler(FILE* f) {
 	int macronum;
 	int i;
 	char* file;
+	int cleanfile;
 	int macro = 0;
 	int isMacro;
 
@@ -64,6 +72,7 @@ char* preasembler(FILE* f) {
 	m[0]=NULL;
 
 	file = (char*) malloc(10000);
+	cleanfile = 1;
 	curline = readline(f);
 	macronum = 0;
 
@@ -76,12 +85,14 @@ char* preasembler(FILE* f) {
 		if (isMacro == 1) {
 			for (i = 0; i < macronum; i++) {
 				if (compareignore(&(curline[ind]), m[i]) ==0) {
-					copyText(inmacro[i], file);
+					copyText(inmacro[i], file, cleanfile);
+					cleanfile = 0;
 					macro = 1;
 				}
 			}
 			if (macro == 0) {
-				copyText(curline, file);
+				copyText(curline, file, cleanfile);
+				cleanfile = 0;
 			}
 			macro = 0;
 		}
@@ -94,7 +105,8 @@ char* preasembler(FILE* f) {
 			}
 			ind=ignorewhitechar(curline,0);
 			while (strncmp(&(curline[ind]), "endmacro", 8) != 0) {
-				copyText(curline, inmacro[macronum]);
+				copyText(curline, inmacro[macronum], cleanfile);
+				cleanfile = 0;
 				curline = readline();
 				ind = ignorewhitechar(curline,ind);
 			}

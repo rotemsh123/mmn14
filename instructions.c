@@ -27,7 +27,9 @@ void handledata(int linenumber, char* curline, int index) {
 
 		inttoword(string, linenumber,&datamemory[DC], 1);
 		if (VERBOSS > 2){
-			printf("Word is: %s\n", WORDtostringwithminus(datamemory[DC]));
+			char * wts = WORDtostringwithminus(datamemory[DC]);
+			printf("Word is: %s\n", wts);
+			free (wts);
 		}
 
 		DC++;
@@ -54,7 +56,11 @@ void putstringindata(char* string){
 			j++;
 		}
 		if (VERBOSS > 2){
-			printf("Word is: %s\n", WORDtostring(datamemory[DC]));
+			char * wts = WORDtostring(datamemory[DC]);
+			printf("Word is: %s\n", wts);
+			free (wts);
+
+
 		}
 		DC++;
 
@@ -138,7 +144,9 @@ void handlestruct(int linenumber, char* curline, int index) {
 	/* First word is int to word*/
 	inttoword(arg1, linenumber, &datamemory[DC], 1);
 	if (VERBOSS > 2){
-		printf("Word is: %s\n", WORDtostringwithminus(datamemory[DC]));
+		char* wts = WORDtostringwithminus(datamemory[DC]);
+		printf("Word is: %s\n", wts);
+		free (wts);
 	}
 	DC++;
 
@@ -248,7 +256,7 @@ void handleInstructions(int linenumber, char* curline, int index) {
 	}
 	else {
 		if (VERBOSS > 0){
-			printf("ERROR in line %d: Illegal instruction: %s", linenumber,
+			printf("ERROR in line %d: Illegal instruction: %s\n", linenumber,
 				&(curline[index]));
 		}
 		ERROR = 1;

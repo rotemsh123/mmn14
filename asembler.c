@@ -81,7 +81,7 @@ int handlelabel(int linenumber, char* curline, int index){
 	}
 	if (instructiontype == 4){
 		if (VERBOSS > 1){
-			printf ("WARNING in line %d. Label: %s is ignored because it is in .extern line\n", linenumber, label);
+			printf ("WARNING in line %d: Label: %s is ignored because it is in .extern line\n", linenumber, label);
 		}
 		return indexofdots+1;
 	}
@@ -95,6 +95,9 @@ int handlelabel(int linenumber, char* curline, int index){
 	return indexofdots+1;
 }
 
+/*
+ * return 0 if the instruction starts with '.' - meaning it is instruction and not order
+ */
 int isInstruction(char* curline, int index){
 	index = ignorewhitechar(curline, index);
 	if (strncmp(".", &(curline[index]),1) ==0){
@@ -104,6 +107,23 @@ int isInstruction(char* curline, int index){
 	return 1;
 }
 
+/*
+ * this function free all used memeory
+ */
+void cleanallmemory(){
+	int i;
+	for (i=0; i< labelindex; i++){
+		free (symboltable[i].name);
+	}
+	for (i=0; i< externindex; i++){
+		free (external[i].name);
+	}
+
+}
+
+/*
+ * this function run the assembler program on specific file
+ */
 void runassembler(char* filename){
 	char* curline;
 	FILE* amfile;
@@ -182,6 +202,7 @@ void runassembler(char* filename){
 	}
 
 	fclose(amfile);
+	cleanallmemory();
 
 }
 
@@ -202,10 +223,14 @@ void saveobjectfile(char* filename){
 		char* string = WORDtostringwithminus(w);
 		int wint = WORDtoInt(w);
 		char* i32 = trans32(wint);
+		char* line32 = trans32(i);
 		if (VERBOSS > 2){
-			printf("Address: %d (%s), value %s (int %d,  32: %s)\n", i, trans32(i), string, wint, i32);
+			printf("Address: %d (%s), value %s (int %d,  32: %s)\n", i, line32, string, wint, i32);
 		}
-		fprintf(objectfile, "%s\t%s\n", trans32(i), i32);
+		fprintf(objectfile, "%s\t%s\n", line32, i32);
+		free (i32);
+		free (line32);
+		free (string);
 	}
 	if (VERBOSS > 2){
 		printf("Starting Data\n");
@@ -215,12 +240,18 @@ void saveobjectfile(char* filename){
 		char* string = WORDtostringwithminus(w);
 		int wint = WORDtoInt(w);
 		char* i32 = trans32(wint);
+		char* line32 = trans32(i+IC);
 		if (VERBOSS > 2){
-			printf("Address: %d (%s), value %s (int %d,  32: %s)\n", i+IC, trans32(i+IC), string, wint, i32);
+			printf("Address: %d (%s), value %s (int %d,  32: %s)\n", i+IC, line32, string, wint, i32);
 		}
-		fprintf(objectfile, "%s\t%s\n", trans32(i+IC), i32);
+		fprintf(objectfile, "%s\t%s\n", line32, i32);
+		free (i32);
+		free (line32);
+		free (string);
+
 	}
 	fclose(objectfile);
+	free (objectfilename);
 
 }
 
@@ -245,6 +276,7 @@ void saveentryfile(char* filename){
 		fprintf(entryfile, "%s\t%s\n", entry[i], trans32(getlabeladdress(entry[i])));
 	}
 	fclose(entryfile);
+	free (entryfilename);
 }
 
 /*
@@ -271,5 +303,6 @@ void saveexternalfile(char* filename){
 		}
 	}
 	fclose(externalfile);
+	free (externalfilename);
 }
 

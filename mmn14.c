@@ -39,15 +39,14 @@ void handlefile(char* filename){
 
 	runassembler(fileaftermacro);
 
-	free (inputfilename);
-	/*free (text);*/
-	free (fileaftermacro);
-
 	if (ERROR == 0){
 		saveobjectfile(filename);
 		saveentryfile(filename);
 		saveexternalfile(filename);
 	}
+	free (inputfilename);
+	free (fileaftermacro);
+	free (text);
 }
 
 /*
@@ -60,10 +59,14 @@ int main(int argc, char **argv) {
 	ERROR=0;
 	for (i=1; i<argc; i++){
 		char* filename = argv[i];
-		if (VERBOSS > 2){
-			printf ("Handeling file: %s\n", filename);
+		if (VERBOSS > 0){
+			printf ("*** Handeling file: %s ***\n", filename);
 		}
 		handlefile(filename);
+
+		if (VERBOSS > 0){
+			printf ("*** Finish handeling file: %s ***\n\n\n", filename);
+		}
 	}
 
 	return 0;
