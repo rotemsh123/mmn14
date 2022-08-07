@@ -117,18 +117,30 @@ void initializestructwords(char* arg, int linenumber){
 	for (i=0; i<=9; i++){
 		w2.value[i]=0;
 	}
-	if (strcmp(&arg[index] , "1")==0){
+	if (strncmp(&arg[index] , "1", 1)==0){
 		w2.value[2]=1;
 	}
-	else if (strcmp(&arg[index] , "2")==0 ){
+	else if (strncmp(&arg[index] , "2", 1)==0 ){
 		w2.value[3]=1;
 	}
 	else{
 		if (VERBOSS > 0){
-			printf("ERROR in line %d: Illegal struct field (must be 1 or 2): %s \n", linenumber, labelname);
+			printf("ERROR in line %d: Illegal struct field (must be 1 or 2): %s \n", linenumber, &arg[index]);
 		}
 		ERROR = 1;
 	}
+	if ((strncmp(&arg[index+1] , " ", 1)!=0) &&
+			(strncmp(&arg[index+1] , "\t", 1)!=0)&&
+			(strncmp(&arg[index+1] , ",", 1)!=0) &&
+			(strncmp(&arg[index+1] , "\0", 1)!=0) &&
+			(strncmp(&arg[index+1] , "\n", 1)!=0)){
+		if (VERBOSS > 0){
+			printf("ERROR in line %d: After Struct must have one of the following chars: (' ', ',', \t, \n, ''). next char is: \"%s\" \n", linenumber, &arg[index+1]);
+		}
+		ERROR = 1;
+	}
+
+
 
 
 	memory[IC] = w2;

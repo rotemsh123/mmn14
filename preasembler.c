@@ -62,6 +62,7 @@ char* preasembler(FILE* f) {
 	int cleanfile;
 	int macro = 0;
 	int isMacro;
+	int linenumber = 1;
 
 	inmacro[0]=NULL;
 
@@ -73,7 +74,7 @@ char* preasembler(FILE* f) {
 
 	file = (char*) malloc(10000);
 	cleanfile = 1;
-	curline = readline(f);
+	curline = readline(f, linenumber++);
 	macronum = 0;
 
 
@@ -99,7 +100,7 @@ char* preasembler(FILE* f) {
 		else {
 			macroname(curline,macronum);
 			inmacro[macronum] = (char*) malloc(200);
-			curline = readline(f);
+			curline = readline(f, linenumber++);
 			if (curline[0] == EOF) {
 				break;
 			}
@@ -107,7 +108,7 @@ char* preasembler(FILE* f) {
 			while (strncmp(&(curline[ind]), "endmacro", 8) != 0) {
 				copyText(curline, inmacro[macronum], cleanfile);
 				cleanfile = 0;
-				curline = readline();
+				curline = readline(f, linenumber++);
 				ind = ignorewhitechar(curline,ind);
 			}
 			macronum++;
@@ -115,7 +116,7 @@ char* preasembler(FILE* f) {
 		if (lastLine==1){
 			break;
 		}
-		curline = readline(f);
+		curline = readline(f, linenumber++);
 
 		ind=0;
 	}

@@ -43,7 +43,7 @@ int ERROR;
  */
 int VERBOSS;
 int islabelline;
-char* readline();
+char* readline(FILE* f, int linenumber);
 char* preasembler(FILE* f);
 int ignorewhitechar(char* line,int ind);
 int compareignore(char* s1, char* s2);
@@ -53,6 +53,7 @@ void runassembler(char* filename);
 void saveobjectfile(char* filename);
 void saveentryfile(char* filename);
 void saveexternalfile(char* filename);
+void cleanallmemory();
 
 int ordertrans(char* order);
 

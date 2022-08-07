@@ -58,6 +58,13 @@ int handlelabel(int linenumber, char* curline, int index){
 	if (indexofdots==-1){
 		return index;
 	}
+	if (indexofdots>30){
+		if (VERBOSS > 0){
+			printf ("ERROR in line %d: Label length is more than 30\n", linenumber);
+			ERROR = 1;
+		}
+		return index;
+	}
 	/* if there is ":" in the line, we take the lable and handle it*/
 	label = getcharstillchar(curline, index, ':');
 	/* check if this label already exists*/
@@ -65,11 +72,27 @@ int handlelabel(int linenumber, char* curline, int index){
 	for (i=0; i< labelindex; i++){
 		if (strcmp(symboltable[i].name, label) == 0){
 			if (VERBOSS > 0){
-				printf ("ERROR in line %d: Label: %s already exists\n", linenumber, label);
+				printf ("ERROR in line %d: Label %s already exists\n", linenumber, label);
 				ERROR = 1;
 			}
 		}
 	}
+	/*
+	 * check illegal lable (name of order, name of instruction)
+	 */
+	if (ordertrans(label) != -1){
+		if (VERBOSS > 0){
+			printf ("ERROR in line %d: Label %s should not be name of formal order\n", linenumber, label);
+			ERROR = 1;
+		}
+	}
+	if ((strcmp(label, ".string") == 0) ||(strcmp(label, ".struct") == 0) || (strcmp(label, ".data") == 0) || (strcmp(label, ".extern") == 0) || (strcmp(label, ".entry") == 0) ){
+		if (VERBOSS > 0){
+			printf ("ERROR in line %d: Label %s should not be name of formal instruction\n", linenumber, label);
+			ERROR = 1;
+		}
+	}
+
 
 	/*Ignore label in .entry or .extern lines*/
 	instructiontype = intructionlinetype(curline, indexofdots+1);
@@ -137,7 +160,7 @@ void runassembler(char* filename){
 
 	amfile = fopen (filename, "r");
 
-	curline = readline(amfile);
+	curline = readline(amfile, linenumber);
 
 	/*
 	 * round 1: build the symbol table
@@ -159,8 +182,7 @@ void runassembler(char* filename){
 		if (lastLine==1){
 			break;
 		}
-		curline = readline(amfile);
-		linenumber++;
+		curline = readline(amfile, linenumber++);
 	}
 
 	fclose(amfile);
@@ -180,7 +202,7 @@ void runassembler(char* filename){
 	linenumber = 1;
 	lastLine = 0;
 	initwords();
-	curline = readline(amfile);
+	curline = readline(amfile, linenumber++);
 
 	while (1){
 		if (isEmptyLineOrComment(curline)!=0){
@@ -197,12 +219,10 @@ void runassembler(char* filename){
 		if (lastLine==1){
 			break;
 		}
-		curline = readline(amfile);
-		linenumber++;
+		curline = readline(amfile, linenumber++);
 	}
 
 	fclose(amfile);
-	cleanallmemory();
 
 }
 
@@ -273,7 +293,9 @@ void saveentryfile(char* filename){
 	entryfile = fopen (entryfilename, "w");
 
 	for (i=0; i<entryindex; i++){
-		fprintf(entryfile, "%s\t%s\n", entry[i], trans32(getlabeladdress(entry[i])));
+		char* entry32 = trans32(getlabeladdress(entry[i]));
+		fprintf(entryfile, "%s\t%s\n", entry[i], entry32);
+		free (entry32);
 	}
 	fclose(entryfile);
 	free (entryfilename);

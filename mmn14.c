@@ -26,7 +26,6 @@ void handlefile(char* filename){
 		exit(-1);
 	}
 	text = preasembler(inputFile);
-	puts(text);
 
 	fclose(inputFile);
 
@@ -44,9 +43,11 @@ void handlefile(char* filename){
 		saveentryfile(filename);
 		saveexternalfile(filename);
 	}
+
 	free (inputfilename);
 	free (fileaftermacro);
 	free (text);
+	cleanallmemory();
 }
 
 /*

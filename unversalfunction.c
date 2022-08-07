@@ -11,19 +11,26 @@ int ignorewhitechar(char* line,int ind) {
 /*
  * this function read line for a file
  */
-char* readline(FILE* f) {
+char* readline(FILE* f, int linenumber) {
 	char* line;
 	int i=0;
 	line=(char*)malloc(80);
 
 	while (1){
-		if (fscanf(f, "%c",&(line[i]))==1){
+		if ((fscanf(f, "%c",&(line[i]))==1) && (i <80)){
 			if (strncmp(&(line[i]),"\n", 1)==0){
 				/*printf("\n Line: %s \n ", line);*/
 				line[i+1]='\0';
 				return line;
 			}
 			i++;
+			if (i>=80){
+				if (VERBOSS > 0){
+					printf ("ERROR in line %d: Line length should not be longer than 80\n", linenumber);
+					ERROR = 1;
+				}
+				return line;
+			}
 		}
 		else{
 			/*printf ("LAST LINE");*/
