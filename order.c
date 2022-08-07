@@ -289,7 +289,7 @@ void handle2param(int linenumber, char* curline, int ordercode, char* order, int
 
 	if (indexof(",", curline, index) ==-1){
 		if (VERBOSS > 0){
-			printf("ERROR in line %d: missing operands for order: %s \n", linenumber, order);
+			printf("ERROR in line %d: Missing operands for order: %s \n", linenumber, order);
 		}
 		ERROR = 1;
 		return;
@@ -385,16 +385,16 @@ void handleorder(int linenumber, char* curline, int index){
 	}
 
 	index = indexof(" ", curline, index);
-	index = ignorewhitechar(curline, index);
 
 	if (index == -1){
 		if (VERBOSS > 0){
-			printf("ERROR in line %d: missing first operand for order: %s \n", linenumber, order);
+			printf("ERROR in line %d: Missing first operand for order: %s \n", linenumber, order);
 		}
 		ERROR = 1;
 		return;
 	}
 
+	index = ignorewhitechar(curline, index);
 
 	/*order with 1 param*/
 	if (ordercode ==4 || ordercode == 5 || (ordercode >= 7 && ordercode <= 13) ){
