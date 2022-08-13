@@ -182,7 +182,7 @@ void runassembler(char* filename){
 		if (lastLine==1){
 			break;
 		}
-		curline = readline(amfile, linenumber++);
+		curline = readline(amfile, ++linenumber);
 	}
 
 	fclose(amfile);
@@ -202,7 +202,7 @@ void runassembler(char* filename){
 	linenumber = 1;
 	lastLine = 0;
 	initwords();
-	curline = readline(amfile, linenumber++);
+	curline = readline(amfile, linenumber);
 
 	while (1){
 		if (isEmptyLineOrComment(curline)!=0){
@@ -219,7 +219,7 @@ void runassembler(char* filename){
 		if (lastLine==1){
 			break;
 		}
-		curline = readline(amfile, linenumber++);
+		curline = readline(amfile, ++linenumber);
 	}
 
 	fclose(amfile);

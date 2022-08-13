@@ -14,22 +14,34 @@ int ignorewhitechar(char* line,int ind) {
 char* readline(FILE* f, int linenumber) {
 	char* line;
 	int i=0;
-	line=(char*)malloc(80);
+	line=(char*)malloc(82);
 
 	while (1){
-		if ((fscanf(f, "%c",&(line[i]))==1) && (i <80)){
+		if ((fscanf(f, "%c",&(line[i]))==1)){
 			if (strncmp(&(line[i]),"\n", 1)==0){
-				/*printf("\n Line: %s \n ", line);*/
 				line[i+1]='\0';
+				/*printf ("line %d: %s\n", linenumber, line);*/
 				return line;
 			}
 			i++;
-			if (i>=80){
+			if (i==80){
+				char temp;
+				if ((fscanf(f, "%c",&(line[i]))==1) && strncmp(&(line[i]),"\n", 1)==0){
+					return line;
+				}
 				if (VERBOSS > 0){
 					printf ("ERROR in line %d: Line length should not be longer than 80\n", linenumber);
-					ERROR = 1;
 				}
-				return line;
+				ERROR = 1;
+				line[i]='\n';
+				line[i+1]='\0';
+				while (fscanf(f, "%c",&temp)==1){
+					/*printf ("char in long line: %c\n", temp);*/
+					if (strncmp(&temp,"\n", 1)==0){
+						/*printf ("line %d: %s\n", linenumber, line);*/
+						return line;
+					}
+				}
 			}
 		}
 		else{
